@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE protocol [
 <!ELEMENT protocol (node|enum)+>
-<!ATTLIST protocol prefix CDATA #IMPLIED>
+<!ATTLIST protocol name CDATA #REQUIRED>
+<!ATTLIST protocol c_prefix CDATA #IMPLIED>
 
 <!ELEMENT enum (value+)*>
 <!ATTLIST enum name CDATA #REQUIRED>
@@ -22,13 +23,11 @@
 <!ATTLIST message name CDATA #REQUIRED>
 <!ATTLIST message type CDATA #REQUIRED>
 ]>
-<protocol prefix="CAN">
-    <enum name="rocket_state">
-        <value key="1" value="IDLE" />
-    </enum>
-
+<protocol name="anirniq" c_prefix="CAN">
     <node id="0" name="emergency">
-        <message id="0" name="test" type="int" />
+        <message_group name="engine">
+            <message id="0" name="stop" type="int" />
+        </message_group>
     </node>
 
     <node id="1" name="mission">
