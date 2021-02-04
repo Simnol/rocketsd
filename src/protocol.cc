@@ -1,9 +1,10 @@
 #include "protocol.h"
 
-Message::Message(int id, std::string name, std::string type)
+Message::Message(int id, std::string name, std::string type, bool command)
     : id_(id)
     , name_(name)
     , type_(type)
+    , command_(command)
 {
 }
 

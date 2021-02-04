@@ -133,7 +133,12 @@ void ProtocolParser::parseMessage(QDomElement xml)
     }
     name += xml.attribute("name").toStdString();
 
-    current_node_->insert(id, new Message(id, name, xml.attribute("type").toStdString()));
+    bool command = false;
+    if (xml.hasAttribute("command") && xml.attribute("command").toStdString() == "yes") {
+        command = true;
+    }
+
+    current_node_->insert(id, new Message(id, name, xml.attribute("type").toStdString(), command));
 }
 
 void ProtocolParser::parseProtocol(QDomElement xml)

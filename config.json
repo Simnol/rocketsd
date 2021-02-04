@@ -4,20 +4,18 @@
             "module": "fake",
             "frequency": 100,
             "alpha": 2,
-            "omega": 1
+            "omega": 1,
+            "node_id": 3,
+            "message_id": 15
         },
         {
             "module": "cute",
             "socket": "/tmp/cute"
         },
-		{
-			"module": "influx",
-			"url": "http://localhost:8086",
-			"buffer_size": 5000
-        },
         {
-            "module": "curse",
-            "output": true
+            "module": "influx",
+            "url": "http://localhost:8086",
+                "buffer_size": 5000
         }
     ]
 }

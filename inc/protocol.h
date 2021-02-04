@@ -15,14 +15,16 @@ private:
     int id_;
     std::string name_;
     std::string type_;
+    bool command_;
 
 public:
-    Message(int id, std::string name, std::string type);
+    Message(int id, std::string name, std::string type, bool command = false);
     ~Message();
 
     int id() const { return id_; }
     std::string_view name() const { return std::string_view(name_); }
     std::string_view type() const { return std::string_view(type_); }
+    bool command() const { return command_; }
 };
 
 class Node {

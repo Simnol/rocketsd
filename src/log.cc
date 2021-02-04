@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <string>
+#include <thread>
 
 #include <ctime>
 
@@ -44,7 +46,10 @@ std::ostream& Log::err(std::string component, std::string message)
     return Log::get().log(ERROR, component, message);
 }
 
-Log::Log() : stream_(&std::cout) {}
+Log::Log()
+{
+    stream_ = nullptr;
+}
 
 Log::~Log() {}
 
@@ -56,13 +61,20 @@ Log& Log::get()
 
 std::ostream& Log::log(Level level, std::string component, std::string message)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::thread::id thread = std::this_thread::get_id();
     auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    *stream_ << "[" << std::put_time(std::localtime(&now), LOG_TIME_FORMAT) << "] (" << string_from_level(level) << ") [" << component << "] ";
+    std::ostream& out = stream_ ? *stream_ : std::cout;
+
+    out << "[" << std::put_time(std::localtime(&now), LOG_TIME_FORMAT) << "] ";
+    out << "(" << string_from_level(level) << ") ";
+    out << "<thread " << std::hex << thread << std::dec << "> ";
+    out << "[" << component << "] ";
 
     if (message != "") {
-        *stream_ << message << std::endl;
+        out << message << std::endl;
     }
 
-    return *stream_;
+    return out;
 }

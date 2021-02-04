@@ -16,6 +16,7 @@ public:
 
 private:
     std::ostream* stream_;
+    std::mutex mutex_;
 
 public:
     static Log& get();

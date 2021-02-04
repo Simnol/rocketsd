@@ -13,6 +13,7 @@ class FakeModule : public Module {
 private:
     QTimer* timer_;
     double freq_, n_, alpha_, omega_;
+    unsigned int nodeid_, messageid_;
 
 public:
     FakeModule(QObject* parent, ProtocolSP protocol);

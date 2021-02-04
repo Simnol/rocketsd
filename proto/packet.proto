@@ -4,11 +4,23 @@ package cute.proto;
 
 message Handshake {
     string name = 1;
-    repeated string commands = 10;
+
+    message Command {
+        enum Type {
+            INT = 0;
+            FLOAT = 1;
+            STRING = 2;
+            BOOL = 3;
+        }
+        
+        string name = 1;
+        Type type = 2;
+    }
+    repeated Command commands = 10;
 }
 
 message Measurement {
-    uint64 timestamp = 1;
+    uint64 timestamp = 1; // In milliseconds
     string source = 2;
 
     oneof value {

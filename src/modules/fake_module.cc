@@ -43,6 +43,16 @@ bool FakeModule::init(json& config)
         omega_ = config["omega"].get<double>();
     }
 
+    nodeid_ = 0;
+    if (has<unsigned>(config, "node_id")) {
+        nodeid_ = config["node_id"].get<unsigned>();
+    }
+
+    messageid_ = 0;
+    if (has<unsigned>(config, "message_id")) {
+        messageid_ = config["message_id"].get<unsigned>();
+    }
+
     timer_->start(1000 / freq_);
 
     Log::info("FakeModule") << "Successfully init'd Fake producer" << std::endl;
@@ -52,8 +62,8 @@ bool FakeModule::init(json& config)
 void FakeModule::onTimeout()
 {
     radio_packet_t packet;
-    packet.node = 3;
-    packet.message_id = CAN_ACQUISITION_GPS_LAT_INDEX;
+    packet.node = nodeid_;
+    packet.message_id = messageid_;
     packet.payload.FLOAT = alpha_ * std::sin(n_);
     n_ += omega_ * ((M_PI * 2) / freq_);
     emit packetReady(packet);

@@ -22,6 +22,7 @@
 <!ATTLIST message id CDATA #REQUIRED>
 <!ATTLIST message name CDATA #REQUIRED>
 <!ATTLIST message type CDATA #REQUIRED>
+<!ATTLIST message command CDATA "no">
 ]>
 <protocol name="anirniq" c_prefix="CAN">
     <node id="0" name="emergency">
@@ -41,15 +42,15 @@
         <message id="1" name="sleep" type="int" />
 
         <message_group name="eject">
-            <message id="2" name="drogue" type="int" />
-            <message id="3" name="main" type="int" />
+            <message id="2" name="drogue" type="int" command="yes" />
+            <message id="3" name="main" type="int" command="yes" />
         </message_group>
 
         <message_group name="engine">
             <message_group name="sequence">
-                <message id="4" name="set" type="int" />
-                <message id="5" name="start" type="int" />
-                <message id="6" name="stop" type="int" />
+                <message id="4" name="set" type="int" command="yes" />
+                <message id="5" name="start" type="int" command="yes" />
+                <message id="6" name="stop" type="int" command="yes" />
             </message_group>
         </message_group>
     </node>
