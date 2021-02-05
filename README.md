@@ -10,10 +10,10 @@ This repository also includes `xmlprotoc.py`, a Python3 script that reads the sa
 
 This project has the following dependencies:
 
-- Qt 5.12 (the path is currently hard-coded in the makefile, you will have to update it locally)
-- Protobuf (for CuteStation endpoint)
+- Qt 5.14 (the path is currently hard-coded in the makefile, you will have to update it locally)
+- Protobuf 3.11 (for CuteStation endpoint)
 - nlohmann::json
-- CMake
+- CMake 3.17
 - Ninja (optionnal)
 - Python 3 for `xmlprotoc.py`
 
@@ -35,7 +35,7 @@ ninja
 Configuration is not yet done, so `protocol.xml` must be in your current directory.
 
 ```bash
-build/rocketsd
+build/bin/rocketsd
 ```
 
 ## Configuration

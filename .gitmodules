@@ -1,3 +1,6 @@
-[submodule "shared"]
-	path = shared
+[submodule "libs/googletest"]
+	path = libs/googletest
+	url = git@github.com:google/googletest.git
+[submodule "src/shared/shared"]
+	path = src/shared/shared
 	url = git@github.com:club-rockets/anirniq-shared.git

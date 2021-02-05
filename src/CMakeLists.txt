@@ -1,0 +1,7 @@
+add_subdirectory(log)
+add_subdirectory(module)
+add_subdirectory(protocol)
+add_subdirectory(proto)
+add_subdirectory(rocketsd)
+add_subdirectory(shared)
+add_subdirectory(util)
