@@ -21,3 +21,14 @@ add_subdirectory(libs)
 enable_testing()
 
 add_subdirectory(src)
+
+
+if (UNIX)
+    add_custom_target(ids
+        COMMAND xmlprotoc/xmlprotoc.py --prepend xmlprotoc/id_head.h.pc --append xmlprotoc/id_tail.h.pc --out xmlprotoc/id.h protocol.xml
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    )
+
+    add_custom_target(clean_gcda ALL COMMAND find -name "*.gcda" -delete COMMENT "Cleaning GCDA files")
+    add_custom_target(coverage COMMAND gcovr -r ../src ./ -e ".*gtest.*" -e ".*/tests/.*" --html-details -o coverage.html)
+endif()

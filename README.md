@@ -1,6 +1,6 @@
 # RockÉTSd
 
-`rocketsd` is a "daemon" that bridges between serial input (UART) and external software, namely InfluxDB and [CuteStation](https://github.com/ngc7293/cutestation). It loads protocol message/node IDs from an XML file but not packet structure. 
+`rocketsd` is a "daemon" that bridges between serial input (UART) and external software, namely InfluxDB and [CuteStation](https://github.com/ngc7293/cutestation). It loads protocol message/node IDs from an XML file but not packet structure.
 
 `rocketsd` is not intented to be general-purpose software, it is tailored to the need of [RockÉTS](https://clubrockets.ca), but I do however strive to display it as an example of CuteStation daemon implementation, with the fool's hope that someone else will use my software one day :).
 

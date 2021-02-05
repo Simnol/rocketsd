@@ -39,18 +39,22 @@ class Message(_NamedElement):
             - An ID (local to the it's Node)
             - A name
             - A type (oneof Bool, Int, Float, String)
+
+        Additionnaly, a Message can be tagged as a command (command="yes"), but
+        this is optionnal. By default this is false ("no")
     """
 
-    def __init__(self, id, name, type, parent):
+    def __init__(self, id, name, type, command, parent):
         super().__init__(name, parent)
         self.id = id
         self.type = type
+        self.command = command
 
     def accept(self, visitor):
         visitor.visitMessage(self)
 
     def __repr__(self):
-        return f'<Message id={self.id} name={self.name} type={self.type}>'
+        return f'<Message id={self.id} name={self.name} type={self.type}{" command" if self.command else ""}>'  # noqa
 
     def fqn(self):
         names = []
@@ -72,7 +76,8 @@ class Message(_NamedElement):
             if not type:
                 return None
 
-            return Message(int(xml.attrib['id']), xml.attrib['name'], type, parent)  # noqa
+            command = True if 'command' in xml.attrib and xml.attrib['command'] == 'yes' else False  # noqa
+            return Message(int(xml.attrib['id']), xml.attrib['name'], type, command, parent)  # noqa
         else:
             error("syntax", 'Missing mandatory attributes for Message')
             return None
@@ -164,6 +169,8 @@ class Protocol(_NamedComposedElement):
     def parse(xml):
         if _mandatory(xml, 'name'):
             protocol = Protocol(xml.attrib['name'])
+        else:
+            return
 
         if 'c_prefix' in xml.attrib:
             protocol.c_prefix = xml.attrib['c_prefix']

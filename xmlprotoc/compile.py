@@ -40,7 +40,7 @@ def compile(protocol, args):
     if args.out == '-':
         outfile = sys.stdout
     else:
-        outfile = open(args.c_out, 'w')
+        outfile = open(args.out, 'w')
 
     if not outfile:
         fatal('compile', f'Could not open {args.out}')

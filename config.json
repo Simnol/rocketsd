@@ -15,7 +15,8 @@
         {
             "module": "influx",
             "url": "http://localhost:8086",
-                "buffer_size": 5000
+            "buffer_size": 5000
         }
-    ]
+    ],
+    "protocol": "protocol.xml"
 }
