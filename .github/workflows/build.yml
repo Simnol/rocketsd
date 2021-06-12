@@ -1,0 +1,41 @@
+name: C/C++ CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          submodules: true
+
+
+      - name: Install tools
+        run: sudo apt-get install ninja-build python3-pip libgl-dev && pip install conan
+
+      - name: Create directories
+        run: |
+          mkdir build
+          cd build
+
+      - name: Install 3rd parties
+        working-directory: build
+        run: |
+          conan remote add davidbourgault https://artifactory.davidbourgault.ca/artifactory/api/conan/conan
+          conan config set general.revisions_enabled=1
+          conan install .. -s compiler.libcxx=libstdc++11 -s cppstd=20 -s build_type=Release -r davidbourgault
+        
+      - name: Configure
+        working-directory: build
+        run: cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
+        
+      - name: Build
+        working-directory: build
+        run: ninja
+        
+      - name: Test
+        working-directory: build
+        run: ctest

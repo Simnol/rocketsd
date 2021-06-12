@@ -9,7 +9,6 @@
 #include "influx_module.hh"
 #include "fake_module.hh"
 #include "serial_module.hh"
-#include "curse_module.hh"
 
 namespace modules {
 
@@ -30,8 +29,6 @@ Module* ModuleFactory::build(rocketsd::protocol::ProtocolSP protocol, json& conf
         module = new FakeModule(parent, protocol);
     } else if (type == "serial") {
         module = new SerialModule(parent, protocol);
-    } else if (type == "curse") {
-        module = new curses::CurseModule(parent, protocol);
     } else {
         Log::warn("ModuleFactory") << "Unknown module type '" << type << "'" << std::endl;
         return nullptr;
