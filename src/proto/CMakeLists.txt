@@ -21,7 +21,7 @@ set_property(SOURCE ${PROTO_SOURCES} PROPERTY SKIP_AUTOGEN ON)
 add_library(cute.proto STATIC ${HEADERS} ${SOURCES} ${PROTO_SOURCES} ${PROTO_HEADERS})
 target_compile_features(cute.proto PUBLIC cxx_std_20)
 target_include_directories(cute.proto PUBLIC inc/ ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(cute.proto PUBLIC protobuf::libprotobuf)
+target_link_libraries(cute.proto PUBLIC CONAN_PKG::protobuf)
 
 ## Tests
 set( TESTS
@@ -35,4 +35,4 @@ add_test(NAME cute.proto COMMAND cute.proto.test)
 
 target_compile_options(cute.proto.test PUBLIC --coverage)
 target_link_options(cute.proto.test PUBLIC --coverage)
-target_link_libraries(cute.proto.test PUBLIC cute.proto gcov gtest)
+target_link_libraries(cute.proto.test PUBLIC cute.proto gcov CONAN_PKG::gtest)

@@ -15,8 +15,8 @@ set(SOURCES
 add_library(rocketsd.protocol STATIC ${SOURCES} ${HEADERS})
 set_property(TARGET rocketsd.protocol PROPERTY CXX_STANDARD 20)
 target_include_directories(rocketsd.protocol PUBLIC inc/ PRIVATE src/)
-target_compile_options(rocketsd.protocol PRIVATE -Wall -Wpedantic -Werror --coverage)
-target_link_libraries(rocketsd.protocol PUBLIC cute.log Qt5::Core Qt5::Xml)
+target_compile_options(rocketsd.protocol PUBLIC -fPIC PRIVATE -Wall -Wpedantic -Werror --coverage)
+target_link_libraries(rocketsd.protocol PUBLIC cute.log CONAN_PKG::qt)
 
 ## Tests
 set( TESTS
@@ -30,4 +30,4 @@ add_test(NAME rocketsd.protocol COMMAND rocketsd.protocol.test)
 set_property(TARGET rocketsd.protocol.test PROPERTY CXX_STANDARD 20)
 target_compile_options(rocketsd.protocol.test PUBLIC --coverage)
 target_link_options(rocketsd.protocol.test PUBLIC --coverage)
-target_link_libraries(rocketsd.protocol.test PUBLIC rocketsd.protocol gcov gtest)
+target_link_libraries(rocketsd.protocol.test PUBLIC rocketsd.protocol gcov CONAN_PKG::gtest)

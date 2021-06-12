@@ -1,32 +1,47 @@
 # RockÉTSd
 
-`rocketsd` is a "daemon" that bridges between serial input (UART) and external software, namely InfluxDB and [CuteStation](https://github.com/ngc7293/cutestation). It loads protocol message/node IDs from an XML file but not packet structure.
+`rocketsd` is a "daemon" that bridges between serial input (UART) and external
+software, namely InfluxDB and [CuteStation](https://github.com/ngc7293/cutestation).
+It loads protocol message/node IDs from an XML file but not packet structure.
 
-`rocketsd` is not intented to be general-purpose software, it is tailored to the need of [RockÉTS](https://clubrockets.ca), but I do however strive to display it as an example of CuteStation daemon implementation, with the fool's hope that someone else will use my software one day :).
+`rocketsd` is not intented to be general-purpose software, it is tailored to the
+need of [RockÉTS](https://clubrockets.ca), but I do however strive to display it
+as an example of CuteStation daemon implementation, with the fool's hope that
+someone else will use my software one day :).
 
-This repository also includes `xmlprotoc.py`, a Python3 script that reads the same protocol XML file and outputs a C-language with messge/node id defines (`#define MESSAGE_ID`).
+This repository also includes `xmlprotoc.py`, a Python3 script that reads the
+same protocol XML file and outputs a C-language with messge/node id defines
+(`#define MESSAGE_ID`).
 
 ## Dependencies
 
 This project has the following dependencies:
 
-- Qt 5.14 (the path is currently hard-coded in the makefile, you will have to update it locally)
-- Protobuf 3.11 (for CuteStation endpoint)
-- nlohmann::json
 - CMake 3.17
 - Ninja (optionnal)
-- Python 3 for `xmlprotoc.py`
+- Python 3
+- Conan
+- lxml for `xmlprotoc.py`
 
 Additionnally:
 
 - CuteStation
 - InfluxDB
 
+## Installing third parties
+
+```bash
+pip install -r requirements.txt
+
+mkdir build; cd build;
+conan install .. -s compiler.libcxx=libstdc++11 -s cppstd=20 -s build_type=Debug
+```
+
 ## Compiling
 
 ```bash
-mkdir build; cd build;
-cmake .. -GNinja
+cd build;
+cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
 ninja
 ```
 
@@ -69,7 +84,7 @@ Receives and transmits data on a UART (serial) port
 
 Packages and sends data to CuteStation via UNIX sockets
 
-| element  | type     | description                                         |
+| element  | type     | description                             x            |
 |----------|----------|-----------------------------------------------------|
 | `module` | `string` | `"cute"`                                            |
 | `socket` | `string` | Path to the UNIX socket CuteStation is listening on |

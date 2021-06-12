@@ -30,7 +30,7 @@ bool CuteModule::init(json& config)
     }
 
     QObject::connect(socket_, &QLocalSocket::connected, this, &CuteModule::onConnected);
-    QObject::connect(socket_, QOverload<QLocalSocket::LocalSocketError>::of(&QLocalSocket::error), this, &CuteModule::onError);
+    QObject::connect(socket_, QOverload<QLocalSocket::LocalSocketError>::of(&QLocalSocket::errorOccurred), this, &CuteModule::onError);
     QObject::connect(socket_, &QLocalSocket::disconnected, this, &CuteModule::connect);
     QObject::connect(socket_, &QLocalSocket::readyRead, this, &CuteModule::onSocketData);
     connect();
