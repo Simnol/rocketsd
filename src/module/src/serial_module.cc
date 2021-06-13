@@ -16,10 +16,14 @@ SerialModule::~SerialModule()
 
 bool SerialModule::init(json& config)
 {
+    if (!Module::init(config)) {
+        return false;
+    }
+
     std::string port;
     unsigned int baudrate;
 
-    if (!util::json::validate("SerailModule", config,
+    if (!util::json::validate("SerialModule", config,
         util::json::required(port, "port"),
         util::json::required(baudrate, "baudrate")
     )) {

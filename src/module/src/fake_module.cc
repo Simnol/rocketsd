@@ -25,6 +25,10 @@ FakeModule::~FakeModule()
 
 bool FakeModule::init(json& config)
 {
+    if (!Module::init(config)) {
+        return false;
+    }
+
     if (!util::json::validate("FakeModule", config,
         util::json::optionnal(freq_, "frequency", 1.0),
         util::json::optionnal(alpha_, "alpha", 1.0),

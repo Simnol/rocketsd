@@ -1,18 +1,36 @@
 {
     "modules": [
         {
+            "id": "fake1",
             "module": "fake",
             "frequency": 100,
             "alpha": 2,
             "omega": 1,
             "node_id": 3,
-            "message_id": 15
+            "message_id": 15,
+
+            "broadcast": ["cute1"]
         },
         {
+            "id": "fake2",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 1,
+            "omega": 0.24,
+            "node_id": 3,
+            "message_id": 16,
+
+            "broadcast": ["cute1"]
+        },
+        {
+            "id": "cute1",
             "module": "cute",
-            "socket": "/tmp/cute"
+            "socket": "/tmp/cute",
+
+            "broadcast": ["fake1"]
         },
         {
+            "id": "influx1",
             "module": "influx",
             "url": "http://localhost:8086",
             "buffer_size": 5000

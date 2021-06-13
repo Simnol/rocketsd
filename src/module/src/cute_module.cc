@@ -25,6 +25,10 @@ CuteModule::~CuteModule()
 
 bool CuteModule::init(json& config)
 {
+    if (!Module::init(config)) {
+        return false;
+    }
+
     if (!util::json::validate("CuteModule", config, util::json::required(socket_path_, "socket"))) {
         return false;
     }
@@ -48,7 +52,7 @@ void CuteModule::onPacket(radio_packet_t packet)
         return;
     }
 
-    if ((node = (*protocol_)[packet.node]) == nullptr) {
+    if ((node = (*_protocol)[packet.node]) == nullptr) {
         Log::warn("CuteModule") << "Could not find Node with id=" << packet.node << ": ignoring" << std::endl;
         return;
     }
@@ -109,7 +113,7 @@ void CuteModule::onSocketData()
         rocketsd::protocol::Node* node = nullptr;
         rocketsd::protocol::Message* message = nullptr;
 
-        if (rocketsd::protocol::from_cute_name(protocol_.get(), measurement.source(), &node, &message)) {
+        if (rocketsd::protocol::from_cute_name(_protocol.get(), measurement.source(), &node, &message)) {
             radio_packet_t packet;
             memset((void*)&packet, 0, sizeof(radio_packet_t));
 
@@ -148,11 +152,11 @@ void CuteModule::onConnected()
     cute::proto::Handshake* handshake = new cute::proto::Handshake();
     handshake->set_name("rocketsd");
 
-    for (std::pair<int, rocketsd::protocol::Node*> node: *protocol_) {
+    for (std::pair<int, rocketsd::protocol::Node*> node: *_protocol) {
         for (std::pair<int, rocketsd::protocol::Message*> message: *(node.second)) {
             if (message.second->command()) {
                 auto* command = handshake->add_commands();
-                command->set_name(rocketsd::protocol::to_cute_name(protocol_.get(), node.second, message.second));
+                command->set_name(rocketsd::protocol::to_cute_name(_protocol.get(), node.second, message.second));
                 command->set_type(cute::proto::Handshake_Command_Type_BOOL);
             }
         }

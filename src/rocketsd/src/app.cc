@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 
 #include <QThread>
 
@@ -43,7 +44,8 @@ App::App(int argc, char* argv[])
         QCoreApplication::quit();
     }
 
-    modules::Module* first = nullptr;
+    std::unordered_map<std::string, modules::Module*> modulesById;
+    std::unordered_map<std::string, std::vector<std::string>> broadcastByModule;
 
     for (auto& subconfig : config["modules"]) {
         modules::Module* module;
@@ -51,20 +53,23 @@ App::App(int argc, char* argv[])
             continue;
         }
 
+        modulesById[module->id()] = module;
+        util::json::validate(subconfig, util::json::optionnal(broadcastByModule[module->id()], std::string("broadcast"), std::vector<std::string>{}));
+
         QThread* thread = new QThread(this);
         thread->setObjectName(module->type().c_str());
         module->moveToThread(thread);
         connect(thread, &QThread::finished, module, &QObject::deleteLater);
 
-        if (first) {
-            connect(first, &modules::Module::packetReady, module, &modules::Module::onPacket, Qt::QueuedConnection);
-            connect(module, &modules::Module::packetReady, first, &modules::Module::onPacket, Qt::QueuedConnection);
-        } else {
-            first = module;
-        }
-
         thread->start();
         workers_.push_back(thread);
+    }
+
+    for (auto& module: modulesById) {
+        for (auto target: broadcastByModule.at(module.first)) {
+            Log::info("App") << "Connecting " << module.first << " to " << target << std::endl;
+            connect(module.second, &modules::Module::packetReady, modulesById[target], &modules::Module::onPacket, Qt::QueuedConnection);
+        }
     }
 }
 

@@ -22,6 +22,10 @@ InfluxModule::~InfluxModule() {}
 
 bool InfluxModule::init(json& config)
 {
+    if (!Module::init(config)) {
+        return false;
+    }
+
     if (!util::json::validate("InfluxModule", config,
         util::json::required(base_url_, "url"),
         util::json::required(max_lines_, "buffer_size")
@@ -43,7 +47,7 @@ void InfluxModule::onPacket(radio_packet_t packet)
     rocketsd::protocol::Node* node;
     rocketsd::protocol::Message* message;
 
-    if ((node = (*protocol_)[packet.node]) == nullptr) {
+    if ((node = (*_protocol)[packet.node]) == nullptr) {
         Log::warn("CuteDeserializer") << "Could not find Node with id=" << packet.node << ": ignoring" << std::endl;
         return;
     }
