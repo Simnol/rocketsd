@@ -12,9 +12,8 @@ set(SOURCES
 )
 
 add_library(cute.util STATIC ${SOURCES} ${HEADERS})
-set_property(TARGET cute.util PROPERTY CXX_STANDARD 20)
 target_include_directories(cute.util PUBLIC inc/ PRIVATE src/)
-target_compile_options(cute.util PUBLIC -fPIC PRIVATE -Wall -Wpedantic -Werror --coverage)
+target_standard_compile_flags(cute.util)
 target_link_libraries(cute.util PUBLIC cute.log CONAN_PKG::qt CONAN_PKG::nlohmann_json)
 
 ## Tests
@@ -25,9 +24,7 @@ set( TESTS
 )
 
 add_executable(cute.util.test ${TESTS})
-add_test(NAME cute.util COMMAND cute.util.test)
+gtest_discover_tests(cute.util.test)
 
-set_property(TARGET cute.util.test PROPERTY CXX_STANDARD 20)
-target_compile_options(cute.util.test PUBLIC --coverage)
-target_link_options(cute.util.test PUBLIC --coverage)
-target_link_libraries(cute.util.test PUBLIC cute.util gcov CONAN_PKG::gtest)
+target_standard_compile_flags(cute.util.test)
+target_link_libraries(cute.util.test PUBLIC cute.util CONAN_PKG::gtest)

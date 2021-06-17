@@ -61,7 +61,7 @@ void CuteModule::onPacket(radio_packet_t packet)
     cute::proto::Data* data = new cute::proto::Data();
     cute::proto::Measurement& measurement = *(data->add_measurements());
     measurement.set_source(std::string("anirniq.") + std::string(node->name()) + "." + std::string(message->name()));
-    measurement.set_timestamp(util::now<std::milli>());
+    measurement.set_timestamp(util::time::now<std::milli>());
 
     util::switcher::string(std::string(message->type()), {
         {"int", [&packet, &measurement]() { measurement.set_int_(packet.payload.INT); }},
@@ -163,7 +163,7 @@ void CuteModule::onConnected()
     dispatch(cutepacket);
 }
 
-void CuteModule::onError(QLocalSocket::LocalSocketError error)
+void CuteModule::onError(QLocalSocket::LocalSocketError /* error */)
 {
     if (socket_->state() == QLocalSocket::ConnectedState) {
         return;

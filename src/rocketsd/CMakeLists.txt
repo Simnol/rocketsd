@@ -10,7 +10,6 @@ set(SOURCES
 )
 
 add_executable(rocketsd ${SOURCES} ${HEADERS})
-set_property(TARGET rocketsd PROPERTY CXX_STANDARD 20)
 target_include_directories(rocketsd PUBLIC inc/ PRIVATE src/)
-target_compile_options(rocketsd PRIVATE -Wall -Wpedantic -Werror --coverage)
-target_link_libraries(rocketsd PUBLIC rocketsd.module rocketsd.protocol cute.proto CONAN_PKG::qt gcov)
+target_standard_compile_flags(rocketsd.module)
+target_link_libraries(rocketsd PUBLIC rocketsd.module rocketsd.protocol cute.proto CONAN_PKG::qt)

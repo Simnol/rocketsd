@@ -19,7 +19,6 @@ SET( HEADERS
 )
 
 add_library(rocketsd.module STATIC ${SOURCES} ${HEADERS})
-set_property(TARGET rocketsd.module PROPERTY CXX_STANDARD 20)
 target_include_directories(rocketsd.module PUBLIC inc PRIVATE src)
-target_compile_options(rocketsd.module PUBLIC -fPIC PRIVATE -Wall -Wpedantic -Werror --coverage)
+target_standard_compile_flags(rocketsd.module)
 target_link_libraries(rocketsd.module PUBLIC cute.util cute.log cute.proto rocketsd.protocol rocketsd.shared CONAN_PKG::qt)

@@ -9,6 +9,6 @@ set(HEADERS
 )
 
 add_library(cute.log STATIC ${SOURCES} ${HEADERS})
-set_property(TARGET cute.log PROPERTY CXX_STANDARD 20)
 target_include_directories(cute.log PUBLIC inc/ PRIVATE src/)
-target_compile_options(cute.log PRIVATE -Wall -Wpedantic -Werror)
+target_standard_compile_flags(cute.log)
+target_link_libraries(cute.log PUBLIC cute.util)

@@ -7,6 +7,8 @@
 #include <string>
 #include <thread>
 
+#include <util/time.hh>
+
 #include <ctime>
 
 namespace {
@@ -70,8 +72,11 @@ std::ostream& Log::log(Level level, const std::string& component, const std::str
     std::ostream* os = stream ? stream : &std::cout;
     std::thread::id thread = std::this_thread::get_id();
     std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    
+    struct tm tm_buffer;
+    localtime_s(&tm_buffer, &now);
 
-    *os << "[" << std::put_time(std::localtime(&now), LOG_TIME_FORMAT) << "] ";
+    *os << "[" << util::time::to_string(std::chrono::system_clock::now(), LOG_TIME_FORMAT) << "] ";
     *os << "(" << string_from_level(level) << ") ";
     *os << "<thread " << std::hex << thread << std::dec << "> ";
     *os << "[" << component << "] ";

@@ -56,7 +56,7 @@ struct optionnal : public _json_constraint {
     optionnal(std::initializer_list<optionnal> o) {}
     ~optionnal() override {}
 
-    bool check(const std::string& context, const nlohmann::json& j) override
+    bool check(const std::string& /* context */, const nlohmann::json& j) override
     {
         if (has<T>(j, name)) {
             target = j[name].get<T>();
@@ -68,11 +68,11 @@ struct optionnal : public _json_constraint {
     }
 };
 
-template <class ... Args>
-bool validate(const nlohmann::json& j, Args ... args)
-{
-    return validate("(unspecified)", j, args...);
-}
+//template <class ... Args>
+//bool validate(const nlohmann::json& j, Args ... args)
+//{
+//    return validate("(unspecified)", j, args...);
+//}
 
 template <class ... Args>
 bool validate(const std::string& context, const nlohmann::json& j, Args ... args)

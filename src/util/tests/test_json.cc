@@ -18,7 +18,7 @@ TEST(util, validates_returns_correct_values_on_success)
     int life;
     double phi;
 
-    bool success = util::json::validate(TEST_JSON,
+    bool success = util::json::validate("", TEST_JSON,
         util::json::required { name, "name" },
         util::json::required { required, "required" },
         util::json::required { life, "life" },
@@ -39,7 +39,7 @@ TEST(util, validates_returns_false_on_failure)
     std::string name;
     int c;
 
-    bool success = util::json::validate(TEST_JSON,
+    bool success = util::json::validate("", TEST_JSON,
         util::json::required(name, "name"),
         util::json::required(c, "c")
     );

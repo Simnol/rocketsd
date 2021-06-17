@@ -21,7 +21,7 @@ Protocol* ProtocolParser::parse(std::filesystem::path file)
         return nullptr;
     }
 
-    file_ = file;
+    file_ = file.string();
     std::ifstream ifs(file);
     if (ifs.fail()) {
         return nullptr;

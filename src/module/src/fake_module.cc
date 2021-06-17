@@ -9,6 +9,10 @@
 #include <log/log.hh>
 #include <util/json.hh>
 
+#ifndef M_PI
+#define M_PI 3.1415
+#endif
+
 namespace modules {
 
 FakeModule::FakeModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol)

@@ -63,7 +63,7 @@ void InfluxModule::onPacket(radio_packet_t packet)
         {"float", [this, &packet]() {buffer_ << packet.payload.FLOAT; }}
     });
      
-    buffer_ << " " << util::now<std::nano>() << std::endl;
+    buffer_ << " " << util::time::now<std::nano>() << std::endl;
     lines_++;
 
     if (lines_ >= max_lines_) {
