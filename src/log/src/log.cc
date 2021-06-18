@@ -71,11 +71,7 @@ std::ostream& Log::log(Level level, const std::string& component, const std::str
     std::lock_guard<std::mutex> lock(mutex);
     std::ostream* os = stream ? stream : &std::cout;
     std::thread::id thread = std::this_thread::get_id();
-    std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     
-    struct tm tm_buffer;
-    localtime_s(&tm_buffer, &now);
-
     *os << "[" << util::time::to_string(std::chrono::system_clock::now(), LOG_TIME_FORMAT) << "] ";
     *os << "(" << string_from_level(level) << ") ";
     *os << "<thread " << std::hex << thread << std::dec << "> ";

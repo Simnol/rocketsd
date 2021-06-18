@@ -1,5 +1,5 @@
 [requires]
-qt/5.15.2
+qt/5.15.2#592a4a2486318d1f6faae8aff362ec1c
 protobuf/3.17.1
 nlohmann_json/3.9.1
 gtest/1.10.0

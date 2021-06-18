@@ -12,16 +12,16 @@ include(conan_qt_executables_variables)
 include(Qt5CoreMacros)
 include(Qt5WidgetsMacros)
 
+if (UNIX)
+    target_compile_options(CONAN_PKG::qt INTERFACE -fPIC)
+endif()
+
 find_package(GTest)
 enable_testing()
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-
-if (UNIX)
-    target_compile_options(CONAN_PKG::qt PUBLIC -fPIC)
-endif()
 
 function(target_os_compile_options)
     cmake_parse_arguments(
@@ -49,9 +49,17 @@ function(target_standard_compile_flags TARGET)
         LINUX -Wall -Werror -Wpedantic -Wno-unknown-pragmas
         WINDOWS /W4 /WX /wd4068
     )
+
+    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+        if (UNIX)
+            target_compile_options(${TARGET} PRIVATE --coverage)
+            target_link_options(${TARGET} PRIVATE --coverage)
+            target_link_libraries(${TARGET} PUBLIC gcov)
+        endif()
+    endif()
+
     target_compile_features(${TARGET} PUBLIC cxx_std_20)
 endfunction()
-
 add_subdirectory(src)
 
 if (UNIX)
