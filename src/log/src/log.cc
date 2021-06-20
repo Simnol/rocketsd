@@ -1,61 +1,47 @@
 #include "log/log.hh"
 
-#include <chrono>
-#include <iomanip>
-#include <iostream>
-#include <map>
-#include <string>
-#include <thread>
-
 #include <util/time.hh>
 
-#include <ctime>
+namespace logging {
 
 namespace {
-const char* LOG_TIME_FORMAT = "%Y-%m-%d %H:%M:%S";
-
-const std::string string_from_level(Log::Level level)
-{
-    static const std::map<const Log::Level, const std::string> LOG_LEVEL_STRING = {
-        { Log::DEBUG, "debug" },
-        { Log::INFO, "info" },
-        { Log::WARNING, "warn" },
-        { Log::ERROR, "error" },
-    };
-
-    return LOG_LEVEL_STRING.at(level);
+    stream create_log_stream(logging::level level, const std::string& component)
+    {        
+        stream s;
+        s.level = level;
+        s.tags.emplace("component", component);
+        s.tags.emplace("time", std::chrono::system_clock::now());
+        return s;
+    }
 }
 
+std::function<void(stream&)> endl = [](stream& s) {
+    Log::get().log(s);
+    s.message.str("");
+};
+
+stream debug(const std::string& component)
+{
+    return create_log_stream(DEBUG, component);
 }
 
-std::ostream& Log::debug(const std::string& component, const std::string& message)
+stream info(const std::string& component)
 {
-    return Log::get().log(DEBUG, component, message);
+    return create_log_stream(INFO, component);
 }
 
-std::ostream& Log::info(const std::string& component, const std::string& message)
+stream warn(const std::string& component)
 {
-    return Log::get().log(INFO, component, message);
+    return create_log_stream(WARNING, component);
 }
 
-std::ostream& Log::warn(const std::string& component, const std::string& message)
+stream err(const std::string& component)
 {
-    return Log::get().log(WARNING, component, message);
-}
-
-std::ostream& Log::err(const std::string& component, const std::string& message)
-{
-    return Log::get().log(ERROR, component, message);
-}
-
-void Log::setStream(std::ostream* stream)
-{
-    Log::get().stream = stream;
+    return create_log_stream(ERR, component);
 }
 
 Log::Log()
 {
-    stream = nullptr;
 }
 
 Log::~Log() {}
@@ -66,20 +52,36 @@ Log& Log::get()
     return log;
 }
 
-std::ostream& Log::log(Level level, const std::string& component, const std::string& message)
+void Log::log(const stream& s)
 {
-    std::lock_guard<std::mutex> lock(mutex);
-    std::ostream* os = stream ? stream : &std::cout;
-    std::thread::id thread = std::this_thread::get_id();
-    
-    *os << "[" << util::time::to_string(std::chrono::system_clock::now(), LOG_TIME_FORMAT) << "] ";
-    *os << "(" << string_from_level(level) << ") ";
-    *os << "<thread " << std::hex << thread << std::dec << "> ";
-    *os << "[" << component << "] ";
-
-    if (message != "") {
-        *os << message << std::endl;
+    for (auto sink: _sinks) {
+        sink->log(s);
     }
+}
 
-    return *os;
+void Log::addSink(LogSinkInterface* sink)
+{
+    _sinks.push_back(sink);
+}
+
+void Log::removeSink(LogSinkInterface* sink)
+{
+    auto it = std::find(_sinks.begin(), _sinks.end(), sink);
+    if (it != _sinks.end()) {
+        _sinks.erase(it);
+    }
+}
+
+} // namespace logging
+
+logging::stream&& operator<<(logging::stream&& s, std::function<void(logging::stream&)> manip)
+{
+    manip(s);
+    return std::move(s);
+}
+
+logging::stream&& operator<<(logging::stream&& s, logging::tag&& tag)
+{
+    s.tags.insert_or_assign(tag.key, tag.value);
+    return std::move(s);
 }

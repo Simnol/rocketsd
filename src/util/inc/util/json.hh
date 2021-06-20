@@ -40,7 +40,7 @@ struct required : public _json_constraint {
             return true;
         }
 
-        Log::warn("json") << "Failed to find mandatory configuration element '" << name << "' for " << context << std::endl;
+        logging::warn("json") << "Failed to find mandatory configuration element '" << name << "' for " << context << logging::endl;
         return false;
     }
 };

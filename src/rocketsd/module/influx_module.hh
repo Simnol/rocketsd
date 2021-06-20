@@ -1,14 +1,14 @@
-#ifndef INFLUX_MODULE_HH_
-#define INFLUX_MODULE_HH_
+#ifndef ROCKETSD_MODULES_INFLUXMODULE_HH_
+#define ROCKETSD_MODULES_INFLUXMODULE_HH_
 
-#include "module/module.hh"
+#include <rocketsd/module/module.hh>
 
 #include <sstream>
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
-namespace modules {
+namespace rocketsd::modules {
 
 class InfluxModule : public Module {
     Q_OBJECT
@@ -22,7 +22,7 @@ private:
     int lines_;
 
 public:
-    InfluxModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol);
+    InfluxModule(QObject* parent, protocol::ProtocolSP protocol);
     ~InfluxModule() override;
 
     bool init(json& config) override;

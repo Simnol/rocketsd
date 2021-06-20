@@ -2,10 +2,12 @@ cmake_minimum_required(VERSION 3.17)
 
 set(SOURCES
     src/log.cc
+    src/ostream_logsink.cc
 )
 
 set(HEADERS
     inc/log/log.hh
+    inc/log/ostream_logsink.hh
 )
 
 add_library(cute.log STATIC ${SOURCES} ${HEADERS})

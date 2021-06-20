@@ -1,4 +1,4 @@
-#include "influx_module.hh"
+#include <rocketsd/module/influx_module.hh>
 
 #include <QNetworkRequest>
 #include <QUrl>
@@ -8,9 +8,9 @@
 #include <util/switch.hh>
 #include <log/log.hh>
 
-namespace modules {
+namespace rocketsd::modules {
 
-InfluxModule::InfluxModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol)
+InfluxModule::InfluxModule(QObject* parent, protocol::ProtocolSP protocol)
     : Module(parent, protocol)
     , network_(new QNetworkAccessManager(this))
     , lines_(0)
@@ -30,26 +30,26 @@ bool InfluxModule::init(json& config)
     }
 
     if (!QUrl(base_url_.c_str()).isValid()) {
-        Log::err("InfluxModule") << "Invalid URL" << std::endl;
+        logging::err("InfluxModule") << "Invalid URL" << logging::endl;
         return false;
     }
 
-    Log::info("InfluxModule") << "Successfully init'd InfluxStation client" << std::endl;
+    logging::info("InfluxModule") << "Successfully init'd InfluxStation client" << logging::endl;
     return true;
 }
 
 void InfluxModule::onPacket(radio_packet_t packet)
 {
-    rocketsd::protocol::Node* node;
-    rocketsd::protocol::Message* message;
+    protocol::Node* node;
+    protocol::Message* message;
 
     if ((node = (*protocol_)[packet.node]) == nullptr) {
-        Log::warn("CuteDeserializer") << "Could not find Node with id=" << packet.node << ": ignoring" << std::endl;
+        logging::warn("CuteDeserializer") << "Could not find Node with id=" << packet.node << ": ignoring" << logging::endl;
         return;
     }
 
     if ((message = (*node)[packet.message_id]) == nullptr) {
-        Log::warn("CuteDeserializer") << "Could not find Message with id=" << packet.node << "for Node '" << node->name() << "': ignoring" << std::endl;
+        logging::warn("CuteDeserializer") << "Could not find Message with id=" << packet.node << "for Node '" << node->name() << "': ignoring" << logging::endl;
         return;
     }
 
@@ -82,7 +82,7 @@ void InfluxModule::onError(QNetworkReply* reply)
             break;
 
         default:
-            Log::err("InfluxModule") << "HTTP error " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << std::endl;
+            logging::err("InfluxModule") << "HTTP error " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() << logging::endl;
     }
 }
 

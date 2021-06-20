@@ -1,5 +1,4 @@
-#ifndef ROCKETSD_APP_HH_
-#define ROCKETSD_APP_HH_
+#ifndef ROCKETSD_APP_APP_HH_
 
 #include <QCoreApplication>
 
@@ -7,14 +6,18 @@
 
 #include <protocol/protocol.hh>
 
+namespace rocketsd::app {
+
 class App : public QCoreApplication {
 private:
-    rocketsd::protocol::ProtocolSP protocol_;
+    protocol::ProtocolSP protocol_;
     std::vector<QThread*> workers_;
 
 public:
     App(int argc, char* argv[]);
     ~App();
 };
+
+} // namespaces
 
 #endif
