@@ -53,7 +53,7 @@ std::istream& operator>>(std::istream& is, DelimitedProtobufStream<T>& stream)
         }
 
         is.read((char*)stream.buffer, size);
-        stream.valid = stream.message.ParseFromArray(stream.buffer, (int)size);
+        stream.valid = stream.message.ParseFromArray(stream.buffer, static_cast<int>(size));
     } else {
         stream.valid = false;
     }
