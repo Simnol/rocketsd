@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2.3.4
+        with:
+          submodules: true
 
       - name: Install tools (Ubuntu)
         if: matrix.config.os == 'ubuntu-latest'
