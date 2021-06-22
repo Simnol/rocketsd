@@ -14,11 +14,12 @@ namespace rocketsd::modules::cute {
  */
 class QtSocketAdapter : public QObject {
     Q_OBJECT
-    struct QtSocketAdapterPriv;
+    struct Priv;
 
 public:
     QtSocketAdapter(QObject* parent, QAbstractSocket* socket, const std::string& host, unsigned port);
     QtSocketAdapter(QObject* parent, QLocalSocket* socket, const std::string& path);
+    virtual ~QtSocketAdapter();
 
     bool isConnected();
     QIODevice* device();
@@ -31,7 +32,7 @@ signals:
     void readyRead();
 
 private:
-    std::unique_ptr<QtSocketAdapterPriv> _d;
+    std::unique_ptr<Priv> _d;
 
 };
 

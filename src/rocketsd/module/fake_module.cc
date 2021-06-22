@@ -18,7 +18,7 @@ namespace rocketsd::modules {
 FakeModule::FakeModule(QObject* parent, protocol::ProtocolSP protocol)
     : Module(parent, protocol)
 {
-    timer_ = new QTimer();
+    timer_ = new QTimer(this);
     connect(timer_, &QTimer::timeout, this, &FakeModule::onTimeout);
     n_ = 0;
 }

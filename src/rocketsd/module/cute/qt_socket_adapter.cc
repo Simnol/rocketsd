@@ -2,14 +2,14 @@
 
 namespace rocketsd::modules::cute {
 
-struct QtSocketAdapter::QtSocketAdapterPriv {
+struct QtSocketAdapter::Priv {
     QAbstractSocket* net_socket = nullptr;
     QLocalSocket* local_socket = nullptr;
 };
 
 QtSocketAdapter::QtSocketAdapter(QObject* parent, QAbstractSocket* socket, const std::string& host, unsigned port)
     : QObject(parent)
-    , _d(new QtSocketAdapterPriv)
+    , _d(new Priv)
 {
     socket->setParent(this);
 
@@ -24,7 +24,7 @@ QtSocketAdapter::QtSocketAdapter(QObject* parent, QAbstractSocket* socket, const
 
 QtSocketAdapter::QtSocketAdapter(QObject* parent, QLocalSocket* socket, const std::string& path)
     : QObject(parent)
-    , _d(new QtSocketAdapterPriv)
+    , _d(new Priv)
 {
     socket->setParent(this);
     
@@ -37,6 +37,18 @@ QtSocketAdapter::QtSocketAdapter(QObject* parent, QLocalSocket* socket, const st
 
     socket->connectToServer(QString::fromStdString(path));
     _d->local_socket = socket;
+}
+
+QtSocketAdapter::~QtSocketAdapter()
+{
+    if (_d->net_socket) {
+        _d->net_socket->disconnectFromHost();
+        _d->net_socket->deleteLater();
+    }
+    if (_d->local_socket) {
+        _d->local_socket->disconnectFromServer();
+        _d->local_socket->deleteLater();
+    }
 }
 
 bool QtSocketAdapter::isConnected()

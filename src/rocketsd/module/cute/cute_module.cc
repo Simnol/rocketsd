@@ -20,7 +20,7 @@ struct CuteModule::Priv {
     std::string host;
     unsigned port;
 
-    std::unique_ptr<QtSocketAdapter> socket;
+    QtSocketAdapter* socket = nullptr;
 };
 
 CuteModule::CuteModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol)
@@ -89,7 +89,7 @@ void CuteModule::onPacket(radio_packet_t packet)
 
 void CuteModule::dispatch(std::shared_ptr<::cute::proto::Packet> packet)
 {
-    if (_d->socket->isConnected()) {
+    if (_d->socket && _d->socket->isConnected()) {
         void* buffer[512];
         packet->SerializeToArray(buffer, 512);
 
@@ -101,7 +101,7 @@ void CuteModule::dispatch(std::shared_ptr<::cute::proto::Packet> packet)
 
 void CuteModule::onSocketData()
 {
-    if (_d->socket->isConnected()) {
+    if (_d->socket && _d->socket->isConnected()) {
         uint64_t size;
 
         _d->socket->device()->read((char*)&size, sizeof(size));
@@ -169,7 +169,7 @@ void CuteModule::connect()
             QObject::connect(adapter, &QtSocketAdapter::disconnected, this, &CuteModule::onDisconnected);
             QObject::connect(adapter, &QtSocketAdapter::errorOccured, this, &CuteModule::onError);
             QObject::connect(adapter, &QtSocketAdapter::readyRead, this, &CuteModule::onSocketData);
-            _d->socket.reset(adapter);
+            _d->socket = adapter;
         }
     }
 }
@@ -199,19 +199,20 @@ void CuteModule::onConnected()
     dispatch(cutepacket);
 }
 
-void CuteModule::onError(QAbstractSocket::SocketError /*error*/)
+void CuteModule::onError(QAbstractSocket::SocketError error)
 {
-    _d->socket.reset();
-    QTimer* timer = new QTimer(this);
-    timer->setSingleShot(true);
-    QObject::connect(timer, &QTimer::timeout, this, &CuteModule::connect);
-    QObject::connect(timer, &QTimer::timeout, timer, &QTimer::deleteLater);
-    timer->start(1000);
+    if (_d->socket && error != QAbstractSocket::ConnectionRefusedError) {
+        logging::err("CuteModule") << _d->socket->device()->errorString().toStdString() << logging::endl;
+    }
+
+    onDisconnected();
 }
 
 void CuteModule::onDisconnected()
 {
-    _d->socket.reset();
+    _d->socket->deleteLater();
+    _d->socket = nullptr;
+
     QTimer* timer = new QTimer(this);
     timer->setSingleShot(true);
     QObject::connect(timer, &QTimer::timeout, this, &CuteModule::connect);
