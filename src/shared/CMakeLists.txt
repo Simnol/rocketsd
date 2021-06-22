@@ -11,6 +11,5 @@ set(SOURCES
 )
 
 add_library(rocketsd.shared STATIC ${SOURCES} ${HEADERS})
-set_property(TARGET rocketsd.shared PROPERTY CXX_STANDARD 20)
-target_include_directories(rocketsd.shared PUBLIC .)
-target_compile_options(rocketsd.shared  PRIVATE -Wall -Wpedantic -Werror --coverage)
+target_include_directories(rocketsd.shared PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_standard_compile_flags(rocketsd.shared)

@@ -1,13 +1,13 @@
-#ifndef SERIAL_MODULE_HH_
-#define SERIAL_MODULE_HH_
+#ifndef ROCKETSD_MODULES_SERIALMODULE_HH_
+#define ROCKETSD_MODULES_SERIALMODULE_HH_
 
-#include "module/module.hh"
+#include <rocketsd/module/module.hh>
 
 #include <deque>
 
 #include <QtSerialPort>
 
-namespace modules {
+namespace rocketsd::modules {
 
 class SerialModule : public Module {
 private:
@@ -16,7 +16,7 @@ private:
     std::deque<std::uint8_t> buffer_;
 
 public:
-    SerialModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol);
+    SerialModule(QObject* parent, protocol::ProtocolSP protocol);
     ~SerialModule() override;
 
     bool init(json& config) override;

@@ -1,4 +1,4 @@
-#include "fake_module.hh"
+#include <rocketsd/module/fake_module.hh>
 
 #include <iostream>
 
@@ -9,12 +9,16 @@
 #include <log/log.hh>
 #include <util/json.hh>
 
-namespace modules {
+#ifndef M_PI
+#define M_PI 3.1415
+#endif
 
-FakeModule::FakeModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol)
+namespace rocketsd::modules {
+
+FakeModule::FakeModule(QObject* parent, protocol::ProtocolSP protocol)
     : Module(parent, protocol)
 {
-    timer_ = new QTimer();
+    timer_ = new QTimer(this);
     connect(timer_, &QTimer::timeout, this, &FakeModule::onTimeout);
     n_ = 0;
 }
@@ -37,7 +41,7 @@ bool FakeModule::init(json& config)
 
     timer_->start(1000 / freq_);
 
-    Log::info("FakeModule") << "Successfully init'd Fake producer" << std::endl;
+    logging::info("FakeModule") << "Successfully init'd Fake producer" << logging::endl;
     return true;
 }
 
@@ -53,7 +57,7 @@ void FakeModule::onTimeout()
 
 void FakeModule::onPacket(radio_packet_t packet)
 {
-    Log::info("FakeModule") << "Received packet: node=" << +packet.node << " message=" << +packet.message_id << " crc=" << +packet.checksum << std::endl;
+    logging::info("FakeModule") << "Received packet: node=" << +packet.node << " message=" << +packet.message_id << " crc=" << +packet.checksum << logging::endl;
 }
 
 } // namespace

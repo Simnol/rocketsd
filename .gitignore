@@ -1,6 +1,9 @@
 # Build artefacts
 build/
+out/
 __pycache__/
 
 # Editor config
 .vscode/
+.vs/
+CMakeSettings.json

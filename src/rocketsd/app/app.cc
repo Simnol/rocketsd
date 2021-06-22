@@ -10,13 +10,15 @@
 #include <shared/interfaces/radio/radio_packet.h>
 
 #include <log/log.hh>
-#include <module/module_factory.hh>
+#include <rocketsd/module/module_factory.hh>
 #include <protocol/protocol_parser.hh>
 #include <util/json.hh>
 
 using json = nlohmann::json;
 
 Q_DECLARE_METATYPE(radio_packet_t)
+
+namespace rocketsd::app {
 
 App::App(int argc, char* argv[])
     : QCoreApplication(argc, argv)
@@ -30,16 +32,17 @@ App::App(int argc, char* argv[])
     if(!util::json::validate("rocketsd", config, util::json::required(xmlpath, "protocol"))) {
         QCoreApplication::quit();
     }
+
     if (xmlpath == "") {
-        Log::err("rocketsd", "XML protocol path cannot be empty");
+        logging::err("rocketsd") << "XML protocol path cannot be empty" << logging::endl;
         QCoreApplication::quit();
     }
 
-    rocketsd::protocol::ProtocolParser parser;
-    protocol_ = rocketsd::protocol::ProtocolSP(parser.parse(std::filesystem::path(xmlpath)));
+    protocol::ProtocolParser parser;
+    protocol_ = protocol::ProtocolSP(parser.parse(std::filesystem::path(xmlpath)));
 
     if (!protocol_) {
-        Log::err("rocketsd", "Could not load XML protocol");
+        logging::err("rocketsd") <<  "Could not load XML protocol" << logging::endl;
         QCoreApplication::quit();
     }
 
@@ -70,7 +73,7 @@ App::App(int argc, char* argv[])
 
 App::~App()
 {
-    Log::info("App", "Quitting!");
+    logging::info("App") << "Quitting!" << logging::endl;
     for (QThread* thread: workers_) {
         thread->quit();
     }
@@ -79,3 +82,5 @@ App::~App()
         thread->wait();
     }
 }
+
+} // namespaces
