@@ -17,13 +17,15 @@ class Module : public QObject {
 
 protected:
     protocol::ProtocolSP protocol_;
+    std::string id_;
 
 public:
     Module(QObject* parent, protocol::ProtocolSP protocol);
     virtual ~Module();
 
-    virtual bool init(json& config) = 0;
+    virtual bool init(json& config);
 
+    std::string id() const;
     virtual std::string type() const = 0;
 
 public slots:

@@ -29,12 +29,16 @@ FakeModule::~FakeModule()
 
 bool FakeModule::init(json& config)
 {
+    if (!Module::init(config)) {
+        return false;
+    }
+
     if (!util::json::validate("FakeModule", config,
-        util::json::optionnal(freq_, "frequency", 1.0),
-        util::json::optionnal(alpha_, "alpha", 1.0),
-        util::json::optionnal(omega_, "omega", 1.0),
-        util::json::optionnal(nodeid_, "node_id", 0u),
-        util::json::optionnal(messageid_, "message_id", 0u)
+        util::json::optional(freq_, "frequency", 1.0),
+        util::json::optional(alpha_, "alpha", 1.0),
+        util::json::optional(omega_, "omega", 1.0),
+        util::json::optional(nodeid_, "node_id", 0u),
+        util::json::optional(messageid_, "message_id", 0u)
     )) {
         return false;
     }

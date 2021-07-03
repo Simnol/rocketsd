@@ -38,10 +38,14 @@ CuteModule::~CuteModule()
 
 bool CuteModule::init(json& config)
 {
+    if (!Module::init(config)) {
+        return false;
+    }
+
     if (!util::json::validate("CuteModule", config,
-            util::json::optionnal(_d->path, "path", ""),
-            util::json::optionnal(_d->host, "host", ""),
-            util::json::optionnal(_d->port, "port", 0u)
+            util::json::optional(_d->path, "path", ""),
+            util::json::optional(_d->host, "host", ""),
+            util::json::optional(_d->port, "port", 0u)
         )) {
         return false;
     }

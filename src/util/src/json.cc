@@ -66,4 +66,19 @@ bool has<std::vector<unsigned>>(const nlohmann::json& j, const std::string& key)
     return ret;
 }
 
+template<>
+bool has<std::vector<std::string>>(const nlohmann::json& j, const std::string& key)
+{
+    bool ret = j.count(key) && j[key].is_array();
+
+    if (ret) {
+        for (const nlohmann::json& e : j) {
+            ret = ret || e.is_string();
+        }
+    }
+
+    return ret;
+}
+
+
 }

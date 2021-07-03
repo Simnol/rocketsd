@@ -22,8 +22,8 @@ TEST(util, validates_returns_correct_values_on_success)
         util::json::required { name, "name" },
         util::json::required { required, "required" },
         util::json::required { life, "life" },
-        util::json::optionnal { phi, "phi", 3.1415 },
-        util::json::optionnal { option, "option", "facultative" }
+        util::json::optional { phi, "phi", 3.1415 },
+        util::json::optional { option, "option", "facultative" }
     );
 
     EXPECT_TRUE(success);

@@ -35,7 +35,7 @@ same protocol XML file and outputs a C-language with messge/node id defines
 This project has the following dependencies:
 
 - CMake 3.17
-- Ninja (optionnal)
+- Ninja (optional)
 - Python 3
 - Conan
 - lxml for `xmlprotoc.py`

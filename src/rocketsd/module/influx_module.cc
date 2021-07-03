@@ -22,6 +22,10 @@ InfluxModule::~InfluxModule() {}
 
 bool InfluxModule::init(json& config)
 {
+    if (!Module::init(config)) {
+        return false;
+    }
+
     if (!util::json::validate("InfluxModule", config,
         util::json::required(base_url_, "url"),
         util::json::required(max_lines_, "buffer_size")

@@ -46,15 +46,15 @@ struct required : public _json_constraint {
 };
 
 template<typename T>
-struct optionnal : public _json_constraint {
+struct optional : public _json_constraint {
     T& target;
     const std::string& name;
     T def;
 
-    optionnal(T& t, const std::string& n, const char* d) : target(t), name(n), def(d) {}
-    optionnal(T& t, const std::string& n, T d) : target(t), name(n), def(d) {}
-    optionnal(std::initializer_list<optionnal> o) {}
-    ~optionnal() override {}
+    optional(T& t, const std::string& n, const char* d) : target(t), name(n), def(d) {}
+    optional(T& t, const std::string& n, T d) : target(t), name(n), def(d) {}
+    optional(std::initializer_list<optional> o) {}
+    ~optional() override {}
 
     bool check(const std::string& /* context */, const nlohmann::json& j) override
     {
