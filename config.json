@@ -25,8 +25,8 @@
         {
             "id": "cute1",
             "module": "cute",
-            "socket": "/tmp/cute",
-
+            "host": "127.0.0.1",
+            "port": 42857,
             "broadcast": ["fake1"]
         },
         {

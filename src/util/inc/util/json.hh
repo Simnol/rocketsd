@@ -40,23 +40,23 @@ struct required : public _json_constraint {
             return true;
         }
 
-        Log::warn("json") << "Failed to find mandatory configuration element '" << name << "' for " << context << std::endl;
+        logging::warn("json") << "Failed to find mandatory configuration element '" << name << "' for " << context << logging::endl;
         return false;
     }
 };
 
 template<typename T>
-struct optionnal : public _json_constraint {
+struct optional : public _json_constraint {
     T& target;
     const std::string& name;
     T def;
 
-    optionnal(T& t, const std::string& n, const char* d) : target(t), name(n), def(d) {}
-    optionnal(T& t, const std::string& n, T d) : target(t), name(n), def(d) {}
-    optionnal(std::initializer_list<optionnal> o) {}
-    ~optionnal() override {}
+    optional(T& t, const std::string& n, const char* d) : target(t), name(n), def(d) {}
+    optional(T& t, const std::string& n, T d) : target(t), name(n), def(d) {}
+    optional(std::initializer_list<optional> o) {}
+    ~optional() override {}
 
-    bool check(const std::string& context, const nlohmann::json& j) override
+    bool check(const std::string& /* context */, const nlohmann::json& j) override
     {
         if (has<T>(j, name)) {
             target = j[name].get<T>();
@@ -67,12 +67,6 @@ struct optionnal : public _json_constraint {
         return true;
     }
 };
-
-template <class ... Args>
-bool validate(const nlohmann::json& j, Args ... args)
-{
-    return validate("(unspecified)", j, args...);
-}
 
 template <class ... Args>
 bool validate(const std::string& context, const nlohmann::json& j, Args ... args)

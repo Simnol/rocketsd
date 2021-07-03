@@ -1,18 +1,19 @@
-#include "module/module_factory.hh"
+#include <rocketsd/module/module_factory.hh>
 
 #include <string>
 
 #include <log/log.hh>
 #include <util/json.hh>
 
-#include "cute_module.hh"
-#include "influx_module.hh"
-#include "fake_module.hh"
-#include "serial_module.hh"
 
-namespace modules {
+#include <rocketsd/module/cute/cute_module.hh>
+#include <rocketsd/module/fake_module.hh>
+#include <rocketsd/module/influx_module.hh>
+#include <rocketsd/module/serial_module.hh>
 
-Module* ModuleFactory::build(rocketsd::protocol::ProtocolSP protocol, json& config, QObject* parent)
+namespace rocketsd::modules {
+
+Module* ModuleFactory::build(protocol::ProtocolSP protocol, json& config, QObject* parent)
 {
     Module* module;
 
@@ -22,7 +23,7 @@ Module* ModuleFactory::build(rocketsd::protocol::ProtocolSP protocol, json& conf
     }
 
     if (type == "cute") {
-        module = new CuteModule(parent, protocol);
+        module = new cute::CuteModule(parent, protocol);
     } else if (type == "influx") {
         module = new InfluxModule(parent, protocol);
     } else if (type == "fake") {
@@ -30,7 +31,7 @@ Module* ModuleFactory::build(rocketsd::protocol::ProtocolSP protocol, json& conf
     } else if (type == "serial") {
         module = new SerialModule(parent, protocol);
     } else {
-        Log::warn("ModuleFactory") << "Unknown module type '" << type << "'" << std::endl;
+        logging::warn("ModuleFactory") << "Unknown module type '" << type << "'" << logging::endl;
         return nullptr;
     }
 

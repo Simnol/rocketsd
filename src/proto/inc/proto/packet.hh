@@ -3,7 +3,10 @@
 
 #include <variant>
 
+#pragma warning( push )
+#pragma warning( disable: 4127 5054)
 #include <packet.pb.h>
+#pragma warning( pop )
 
 #include "delimited_protobuf_stream.hh"
 

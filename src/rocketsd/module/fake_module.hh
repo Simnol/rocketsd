@@ -1,11 +1,11 @@
-#ifndef FAKE_MODULE_HH_
-#define FAKE_MODULE_HH_
+#ifndef ROCKETSD_MODULES_FAKEMODULE_HH_
+#define ROCKETSD_MODULES_FAKEMODULE_HH_
 
-#include "module/module.hh"
+#include <rocketsd/module/module.hh>
 
 #include <QTimer>
 
-namespace modules {
+namespace rocketsd::modules {
 
 class FakeModule : public Module {
     Q_OBJECT
@@ -16,7 +16,7 @@ private:
     unsigned int nodeid_, messageid_;
 
 public:
-    FakeModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol);
+    FakeModule(QObject* parent, protocol::ProtocolSP protocol);
     ~FakeModule() override;
 
     bool init(json& config) override;

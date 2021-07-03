@@ -41,7 +41,7 @@ class Message(_NamedElement):
             - A type (oneof Bool, Int, Float, String)
 
         Additionnaly, a Message can be tagged as a command (command="yes"), but
-        this is optionnal. By default this is false ("no")
+        this is optional. By default this is false ("no")
     """
 
     def __init__(self, id, name, type, command, parent):

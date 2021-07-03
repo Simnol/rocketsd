@@ -1,11 +1,11 @@
-#include "serial_module.hh"
+#include <rocketsd/module/serial_module.hh>
 
 #include <log/log.hh>
 #include <util/json.hh>
 
-namespace modules {
+namespace rocketsd::modules {
 
-SerialModule::SerialModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol)
+SerialModule::SerialModule(QObject* parent, protocol::ProtocolSP protocol)
     : Module(parent, protocol)
 {
 }
@@ -35,7 +35,7 @@ bool SerialModule::init(json& config)
 
     connect(serialport_, &QSerialPort::readyRead, this, &SerialModule::onData);
 
-    Log::info("SerialModule") << "Successfully init'd Serial producer" << std::endl;
+    logging::info("SerialModule") << "Successfully init'd Serial producer" << logging::endl;
     return true;
 }
 

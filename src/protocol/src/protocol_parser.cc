@@ -21,7 +21,7 @@ Protocol* ProtocolParser::parse(std::filesystem::path file)
         return nullptr;
     }
 
-    file_ = file;
+    file_ = file.string();
     std::ifstream ifs(file);
     if (ifs.fail()) {
         return nullptr;
@@ -54,10 +54,11 @@ void ProtocolParser::parseChildren(QDomElement xml, QStringList validTags)
         QString tag = child.tagName();
 
         if (!validTags.contains(tag)) {
-            Log::warn("ProtocolParser") << file_
-                                        << ": unexpected element '" << qPrintable(child.tagName())
-                                        << "' on line " << child.lineNumber()
-                                        << ": ignoring" << std::endl;
+            logging::warn("ProtocolParser")
+                << "ignoring unexpected element '" << qPrintable(child.tagName()) << "'" 
+                << logging::tag{"line", child.lineNumber()}
+                << logging::tag{"file", file_}
+                << logging::endl;
         }
 
         if (tag == "message_group") {
@@ -78,11 +79,12 @@ bool ProtocolParser::requireAttributes(QDomElement xml, QStringList keys)
 
     for (const auto& key : keys) {
         if (!attrib.contains(key)) {
-            Log::warn("ProtocolParser") << file_
-                                        << ": missing mandatory attribute '" << qPrintable(key)
-                                        << " for element '" << qPrintable(xml.tagName())
-                                        << "' on line " << xml.lineNumber()
-                                        << ": skipping. " << std::endl;
+            logging::warn("ProtocolParser")
+                << "missing mandatory attribute '" << qPrintable(key) << "'" 
+                << logging::tag{"line", xml.lineNumber()}
+                << logging::tag{"file", file_}
+                << logging::endl;
+
             return false;
         }
     }
@@ -99,7 +101,11 @@ void ProtocolParser::parseNode(QDomElement xml)
     bool ok = true;
     int id = xml.attribute("id").toInt(&ok);
     if (!ok) {
-        Log::warn("ProtocolParser") << file_ << ": 'id' attribute not integer for 'node' element on line " << xml.lineNumber() << ": skipping" << std::endl;
+        logging::warn("ProtocolParser")
+                << "'id' attribute not integer for 'node' element: skipping"
+                << logging::tag{"line", xml.lineNumber()}
+                << logging::tag{"file", file_}
+                << logging::endl;
         return;
     }
 
@@ -130,7 +136,11 @@ void ProtocolParser::parseMessage(QDomElement xml)
     bool ok = true;
     int id = xml.attribute("id").toInt(&ok);
     if (!ok) {
-        Log::warn("ProtocolParser") << file_ << ": 'id' attribute not integer for 'message' element on line " << xml.lineNumber() << ": skipping" << std::endl;
+                logging::warn("ProtocolParser")
+                << "'id' attribute not integer for 'message' element: skipping"
+                << logging::tag{"line", xml.lineNumber()}
+                << logging::tag{"file", file_}
+                << logging::endl;
         return;
     }
 

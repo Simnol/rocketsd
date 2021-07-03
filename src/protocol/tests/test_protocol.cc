@@ -30,6 +30,7 @@ TEST(protocol, parse_succeeds)
     protocol = parser.parse(test_xml);
 
     EXPECT_NE(protocol, nullptr);
+    delete protocol;
 }
 
 TEST(protocol, parse_creates_all_documented_elements)
@@ -42,6 +43,7 @@ TEST(protocol, parse_creates_all_documented_elements)
     EXPECT_EQ(protocol->size(), 2);
     EXPECT_EQ((*protocol)[1]->size(), 2);
     EXPECT_EQ((*protocol)[2]->size(), 2);
+    delete protocol;
 }
 
 TEST(protocol, parse_populates_fields_correctly)
@@ -55,6 +57,7 @@ TEST(protocol, parse_populates_fields_correctly)
     EXPECT_EQ((*protocol)[1]->name(), "node1");
     EXPECT_EQ((*(*protocol)[1])[1]->name(), "group1.msg1");
     EXPECT_EQ((*(*protocol)[1])[1]->type(), "int");
+    delete protocol;
 }
 
 TEST(protocol, to_cute_name_generates_correct_names)
@@ -65,6 +68,7 @@ TEST(protocol, to_cute_name_generates_correct_names)
     protocol = parser.parse(test_xml);
     EXPECT_EQ("prot1.node1.group1.msg1", rocketsd::protocol::to_cute_name(protocol, 1, 1));
     EXPECT_EQ("prot1.node2.msg2", rocketsd::protocol::to_cute_name(protocol, 2, 2));
+    delete protocol;
 }
 
 TEST(protocol, from_cute_name_finds_correct_nodes)
@@ -83,4 +87,5 @@ TEST(protocol, from_cute_name_finds_correct_nodes)
     EXPECT_EQ(message->name(), "msg2");
     EXPECT_EQ(message->id(), 2);
     EXPECT_EQ(message->type(), "float");
+    delete protocol;
 }

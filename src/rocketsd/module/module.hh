@@ -1,5 +1,5 @@
-#ifndef MODULE_HH_
-#define MODULE_HH_
+#ifndef ROCKETSD_MODULES_MODULE_HH_
+#define ROCKETSD_MODULES_MODULE_HH_
 
 #include <QObject>
 
@@ -10,19 +10,17 @@
 
 using json = nlohmann::json;
 
-namespace modules {
+namespace rocketsd::modules {
 
 class Module : public QObject {
     Q_OBJECT
 
-private:
-    std::string _id;
-
 protected:
-    rocketsd::protocol::ProtocolSP _protocol;
+    protocol::ProtocolSP protocol_;
+    std::string id_;
 
 public:
-    Module(QObject* parent, rocketsd::protocol::ProtocolSP protocol);
+    Module(QObject* parent, protocol::ProtocolSP protocol);
     virtual ~Module();
 
     virtual bool init(json& config);

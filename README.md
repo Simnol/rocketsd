@@ -1,5 +1,22 @@
 # RockÉTSd
 
+---
+
+- [RockÉTSd](#rockétsd)
+  - [Dependencies](#dependencies)
+  - [Installing third parties](#installing-third-parties)
+  - [Compiling](#compiling)
+  - [Running](#running)
+  - [Configuration](#configuration)
+    - [Modules](#modules)
+      - [FakeModule](#fakemodule)
+      - [Serial](#serial)
+      - [Cute](#cute)
+      - [InfluxDB](#influxdb)
+
+
+---
+
 `rocketsd` is a "daemon" that bridges between serial input (UART) and external
 software, namely InfluxDB and [CuteStation](https://github.com/ngc7293/cutestation).
 It loads protocol message/node IDs from an XML file but not packet structure.
@@ -18,7 +35,7 @@ same protocol XML file and outputs a C-language with messge/node id defines
 This project has the following dependencies:
 
 - CMake 3.17
-- Ninja (optionnal)
+- Ninja (optional)
 - Python 3
 - Conan
 - lxml for `xmlprotoc.py`
@@ -34,7 +51,7 @@ Additionnally:
 pip install -r requirements.txt
 
 mkdir build; cd build;
-conan install .. -s compiler.libcxx=libstdc++11 -s cppstd=20 -s build_type=Debug
+conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Debug
 ```
 
 ## Compiling
@@ -82,12 +99,17 @@ Receives and transmits data on a UART (serial) port
 
 #### Cute
 
-Packages and sends data to CuteStation via UNIX sockets
+Packages and sends data to CuteStation via UNIX or TCP sockets.
 
-| element  | type     | description                             x            |
+| element  | type     | description                                         |
 |----------|----------|-----------------------------------------------------|
 | `module` | `string` | `"cute"`                                            |
 | `socket` | `string` | Path to the UNIX socket CuteStation is listening on |
+| `host`   | `string` | TCP host address CuteStation is listening on        |
+| `port`   | `uint`   | TCP port CuteStation is listening on                |
+
+If both "socket" and "host"+"port" are configured, the Cute module will prefer
+the UNIX socket.
 
 #### InfluxDB
 
