@@ -34,8 +34,12 @@ bool SerialModule::init(json& config)
     serialport_->setBaudRate(baudrate);
 
     connect(serialport_, &QSerialPort::readyRead, this, &SerialModule::onData);
+    connect(serialport_, &QSerialPort::errorOccurred, this, &SerialModule::onError);
+    if (!serialport_->open(QIODevice::ReadWrite)) {
+        return false;
+    }
 
-    logging::info("SerialModule") << "Successfully init'd Serial producer" << logging::endl;
+    logging::info("SerialModule") << "Successfully init'd Serial client" << logging::endl;
     return true;
 }
 
@@ -47,10 +51,9 @@ void SerialModule::onPacket(radio_packet_t packet)
 
 void SerialModule::onData()
 {
-    //FIXME: This has not been tested whatsoever
     radio_packet_t packet;
-
     QByteArray buffer = serialport_->readAll();
+
     for (const auto& byte: buffer) {
         buffer_.push_back(static_cast<std::uint8_t>(byte));
 
@@ -77,10 +80,20 @@ void SerialModule::onData()
                 emit packetReady(packet);
                 buffer_.erase(buffer_.begin(), buffer_.begin() + sizeof(radio_packet_t));
             } else {
+                logging::debug("SerialModule") << "Invalid CRC" 
+                    << logging::tag{"buffer_size", (int)buffer_.size()}
+                    << logging::tag{"got", (int)packet.checksum}
+                    << logging::tag{"expected", (int)radio_compute_crc(&packet)}
+                    << logging::endl;
                 buffer_.erase(buffer_.begin());
             }
         }
     }
+}
+
+void SerialModule::onError(QSerialPort::SerialPortError error)
+{
+    logging::err("SerialModule") << "Serial port error: " << error << logging::endl;
 }
 
 } // namespace

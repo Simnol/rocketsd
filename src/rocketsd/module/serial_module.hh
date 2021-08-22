@@ -27,6 +27,7 @@ public slots:
     void onPacket(radio_packet_t packet) override;
 
 private slots:
+    void onError(QSerialPort::SerialPortError error);
     void onData();
 };
 
