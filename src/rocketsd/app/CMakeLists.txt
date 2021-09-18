@@ -13,3 +13,5 @@ add_executable(rocketsd ${SOURCES} ${HEADERS})
 target_include_directories(rocketsd PUBLIC inc/ PRIVATE src/)
 target_standard_compile_flags(rocketsd)
 target_link_libraries(rocketsd PUBLIC rocketsd.module rocketsd.protocol cute.proto CONAN_PKG::qt)
+
+install(TARGETS rocketsd DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

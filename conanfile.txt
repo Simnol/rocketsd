@@ -5,7 +5,7 @@ nlohmann_json/3.9.1
 gtest/1.10.0
 
 [options]
-qt:shared=True
+qt:shared=False
 qt:qtserialport=True
 qt:with_mysql=False
 qt:with_pq=False
@@ -17,4 +17,5 @@ cmake
 cmake_paths
 
 [imports]
-bin, *.dll -> ./bin
+bin, *.dll -> ./lib
+lib, *.so* -> ./lib
