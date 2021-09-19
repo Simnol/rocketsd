@@ -1,26 +1,28 @@
-name: C/C++ CI
+name: Build & Test
 
 on:
   push:
-    branches:
+    branches-ignore:
       - master
 
 jobs:
-  build-package:
+  build-test:
+    environment: Conan
+
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
 
     strategy:
       matrix:
         config:
-          # - {
-          #     name: Windows MSVC,
-          #     os: windows-latest,
-          #     build_type: Release,
-          #     cc: cl,
-          #     cxx: cl,
-          #     generator: Visual Studio 16 2019
-          #   }
+          - {
+              name: Windows MSVC,
+              os: windows-latest,
+              build_type: Release,
+              cc: cl,
+              cxx: cl,
+              generator: Visual Studio 16 2019
+            }
           - {
               name: Ubuntu GCC,
               os: ubuntu-latest,
@@ -42,8 +44,9 @@ jobs:
       - name: Install Conan
         run: |
           pip install conan
-          conan remote add davidbourgault https://artifactory.davidbourgault.ca/artifactory/api/conan/conan
           conan config set general.revisions_enabled=1
+          conan remote add davidbourgault https://artifactory.davidbourgault.ca/artifactory/api/conan/conan
+          conan user -p ${{ secrets.CONAN_PASSWORD }} -r davidbourgault david
 
       - name: Create directories
         run: mkdir build
@@ -51,12 +54,15 @@ jobs:
       - name: Install Third Parties (Ubuntu)
         if: matrix.config.os == 'ubuntu-latest'
         working-directory: build
-        run: conan install .. -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
+        run: conan install .. -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.config.build_type }} -r davidbourgault --build=missing
 
       - name: Install Third Parties (Windows)
         if: matrix.config.os == 'windows-latest'
         working-directory: build
-        run: conan install .. -s compiler="Visual Studio" -s compiler.version=16 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
+        run: conan install .. -s compiler="Visual Studio" -s compiler.version=16 -s build_type=${{ matrix.config.build_type }} -r davidbourgault --build=missing
+
+      - name: Upload
+        run: conan upload qt/* --remote davidbourgault --all --confirm
 
       - name: Configure
         working-directory: build
@@ -69,19 +75,3 @@ jobs:
       - name: Test
         working-directory: build
         run: ctest --rerun-failed --output-on-failure
-
-      - name: Package
-        working-directory: build
-        run: cpack
-
-      - name: Get package version
-        working-directory: build
-        run: echo ROCKETSD_VERSION=$(ls *.deb | cut -d- -f2) >> $GITHUB_ENV
-
-      - name: Upload
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "build/rocketsd-*.deb"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit: master
-          tag: v${{ env.ROCKETSD_VERSION }}

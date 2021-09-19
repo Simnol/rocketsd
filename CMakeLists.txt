@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17.0)
-project(rocketsd)
+project(rocketsd VERSION 1.0.0)
 
 # Third parties
 include("${CMAKE_BINARY_DIR}/conan_paths.cmake")
