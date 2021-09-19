@@ -25,11 +25,15 @@ find_package(GTest)
 enable_testing()
 
 # Installation stuff
-set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "David Bourgault")
-include(CPack)
+if (UNIX)
+    set(CPACK_GENERATOR "DEB")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "David Bourgault")
+elseif(MSVC)
+    set(CPACK_GENERATOR "WIX")
+endif()
 
-set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
+include(CPack)
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Functions
 function(target_os_compile_options)
@@ -59,7 +63,7 @@ function(target_standard_compile_flags TARGET)
         WINDOWS /W4 /WX /wd4068
     )
 
-    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    if (CMAKE_BUILD_TYPE STREQUAL Debug)
         if (UNIX)
             target_compile_options(${TARGET} PRIVATE --coverage)
             target_link_options(${TARGET} PRIVATE --coverage)
