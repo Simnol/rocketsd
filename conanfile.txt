@@ -17,5 +17,5 @@ cmake
 cmake_paths
 
 [imports]
-bin, *.dll -> ./lib
+bin, *.dll -> ./bin
 lib, *.so* -> ./lib
