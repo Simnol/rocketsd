@@ -23,6 +23,13 @@
             "broadcast": ["cute1"]
         },
         {
+            "id": "serial",
+            "module": "serial",
+            "port": "/dev/pts/24",
+            "baudrate": 115200,
+            "broadcast": ["cute1"]
+        },
+        {
             "id": "cute1",
             "module": "cute",
             "host": "127.0.0.1",

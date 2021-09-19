@@ -1,5 +1,6 @@
 include_directories(AFTER ${CMAKE_SOURCE_DIR}/src)
 
+add_subdirectory(checksum)
 add_subdirectory(log)
 add_subdirectory(proto)
 add_subdirectory(protocol)
