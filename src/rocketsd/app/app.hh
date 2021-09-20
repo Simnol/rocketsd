@@ -2,6 +2,8 @@
 
 #include <QCoreApplication>
 
+#include <filesystem>
+
 #include <QThread>
 
 #include <protocol/protocol.hh>
@@ -14,7 +16,7 @@ private:
     std::vector<QThread*> workers_;
 
 public:
-    App(int argc, char* argv[]);
+    App(const std::filesystem::path& config_path, const std::filesystem::path& xml_path, int argc, char* argv[]);
     ~App();
 };
 
