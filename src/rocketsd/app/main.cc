@@ -1,14 +1,17 @@
 #include "app.hh"
 
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 
 #include <signal.h>
 
+#include <nlohmann/json.hpp>
 #include <google/protobuf/stubs/common.h>
 
 #include <log/log.hh>
 #include <log/ostream_logsink.hh>
+#include <protocol/protocol_parser.hh>
 
 namespace {
 
@@ -80,18 +83,34 @@ int main(int argc, char* argv[])
         return clean_exit(EXIT_FAILURE);
     }
 
-    if (!std::filesystem::exists(args.config_path)) {
-        logging::err("main") << "Could not find configuration file " << args.config_path << logging::endl;
+    if (!std::filesystem::is_regular_file(args.config_path)) {
+        logging::err("rocketsd") << "Could not find configuration file " << args.config_path << logging::endl;
         return clean_exit(EXIT_FAILURE);
     }
 
-    if (!std::filesystem::exists(args.xml_path)) {
-        logging::err("main") << "Could not find protocol file " << args.xml_path << logging::endl;
+    if (!std::filesystem::is_regular_file(args.xml_path)) {
+        logging::err("rocketsd") << "Could not find protocol file " << args.xml_path << logging::endl;
         return clean_exit(EXIT_FAILURE);
     }
 
-    rocketsd::app::App app(args.config_path, args. xml_path, argc, (char**)argv);
+    nlohmann::json config;
+    try {
+        std::ifstream ifs(args.config_path);
+        config = nlohmann::json::parse(ifs, nullptr, true, true);
+    } catch (nlohmann::json::exception& e) {
+        logging::err("rocketsd") << "Error parsing configuration: " << e.what() << logging::endl;
+        return clean_exit(EXIT_FAILURE);
+    }
+
+    rocketsd::protocol::ProtocolParser parser;
+    rocketsd::protocol::ProtocolSP protocol = rocketsd::protocol::ProtocolSP(parser.parse(args.xml_path));
+
+    if (!protocol) {
+        logging::err("rocketsd") <<  "Could not load XML protocol" << logging::endl;
+        return clean_exit(EXIT_FAILURE);
+    }
+
+    rocketsd::app::App app(config, protocol, argc, (char**)argv);
     signal(SIGINT, [](int /*a*/){ QCoreApplication::quit(); });
-
     return clean_exit(app.exec());
 }
