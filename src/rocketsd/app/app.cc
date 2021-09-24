@@ -27,7 +27,7 @@ App::App(const std::filesystem::path& config_path, const std::filesystem::path& 
     qRegisterMetaType<radio_packet_t>();
 
     std::ifstream ifs(config_path);
-    json config = json::parse(ifs);
+    json config = json::parse(ifs, nullptr, true, true);
 
     protocol::ProtocolParser parser;
     protocol_ = protocol::ProtocolSP(parser.parse(xml_path));

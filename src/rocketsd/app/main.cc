@@ -80,12 +80,12 @@ int main(int argc, char* argv[])
         return clean_exit(EXIT_FAILURE);
     }
 
-    if (!std::filesystem::exists(args.config_path)) {
+    if (!std::filesystem::is_regular_file(args.config_path)) {
         logging::err("main") << "Could not find configuration file " << args.config_path << logging::endl;
         return clean_exit(EXIT_FAILURE);
     }
 
-    if (!std::filesystem::exists(args.xml_path)) {
+    if (!std::filesystem::is_regular_file(args.xml_path)) {
         logging::err("main") << "Could not find protocol file " << args.xml_path << logging::endl;
         return clean_exit(EXIT_FAILURE);
     }
