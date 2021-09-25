@@ -21,31 +21,12 @@ Q_DECLARE_METATYPE(radio_packet_t)
 
 namespace rocketsd::app {
 
-App::App(int argc, char* argv[])
+App::App(json config, protocol::ProtocolSP protocol, int argc, char* argv[])
     : QCoreApplication(argc, argv)
+    , protocol_(protocol)
 {
     qRegisterMetaType<radio_packet_t>();
 
-    std::ifstream ifs("config.json");
-    json config = json::parse(ifs);
-
-    std::string xmlpath;
-    if(!util::json::validate("rocketsd", config, util::json::required(xmlpath, "protocol"))) {
-        QCoreApplication::quit();
-    }
-
-    if (xmlpath == "") {
-        logging::err("rocketsd") << "XML protocol path cannot be empty" << logging::endl;
-        QCoreApplication::quit();
-    }
-
-    protocol::ProtocolParser parser;
-    protocol_ = protocol::ProtocolSP(parser.parse(std::filesystem::path(xmlpath)));
-
-    if (!protocol_) {
-        logging::err("rocketsd") <<  "Could not load XML protocol" << logging::endl;
-        QCoreApplication::quit();
-    }
 
     std::unordered_map<std::string, modules::Module*> modulesById;
     std::unordered_map<std::string, std::vector<std::string>> broadcastByModule;

@@ -36,7 +36,9 @@ Protocol* ProtocolParser::parse(std::filesystem::path file)
 Protocol* ProtocolParser::parse(std::string xml)
 {
     QDomDocument doc;
-    doc.setContent(QString(xml.c_str()));
+    if (!doc.setContent(QString(xml.c_str()))) {
+        return nullptr;
+    }
 
     QDomElement root = doc.documentElement();
     if (root.tagName() != "protocol") {

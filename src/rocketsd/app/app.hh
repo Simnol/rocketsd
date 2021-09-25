@@ -1,8 +1,13 @@
 #ifndef ROCKETSD_APP_APP_HH_
+#define ROCKETSD_APP_APP_HH_
 
 #include <QCoreApplication>
 
+#include <filesystem>
+
 #include <QThread>
+
+#include <nlohmann/json.hpp>
 
 #include <protocol/protocol.hh>
 
@@ -14,7 +19,7 @@ private:
     std::vector<QThread*> workers_;
 
 public:
-    App(int argc, char* argv[]);
+    App(nlohmann::json config, protocol::ProtocolSP procotol, int argc, char* argv[]);
     ~App();
 };
 

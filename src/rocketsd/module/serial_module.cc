@@ -5,6 +5,30 @@
 
 namespace rocketsd::modules {
 
+namespace {
+    const std::string qtSocketErrorToString(QSerialPort::SerialPortError error)
+    {
+        const char* errorStrings[] = {
+            "No error",
+            "Device not found",
+            "Permission denied",
+            "Could not open",
+            "Parity error",
+            "Frame error",
+            "Break condition error",
+            "Could not write",
+            "Could not read",
+            "Resource error",
+            "Unsupported operation",
+            "Unknown error",
+            "Timeout",
+            "Not open",
+        };
+
+        return (error >= 0 && error < sizeof(errorStrings)) ? errorStrings[error] : "Unknown error";
+    }
+}
+
 SerialModule::SerialModule(QObject* parent, protocol::ProtocolSP protocol)
     : Module(parent, protocol)
 {
@@ -93,7 +117,9 @@ void SerialModule::onData()
 
 void SerialModule::onError(QSerialPort::SerialPortError error)
 {
-    logging::err("SerialModule") << "Serial port error: " << error << logging::endl;
+    if (error != QSerialPort::NoError) {
+        logging::err("SerialModule") << "Serial port error: " << qtSocketErrorToString(error) << logging::endl;
+    }
 }
 
 } // namespace

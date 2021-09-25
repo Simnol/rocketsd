@@ -1,9 +1,6 @@
-name: Build Packages
+name: Build, test and package
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   build-package:
@@ -42,8 +39,9 @@ jobs:
       - name: Install Conan
         run: |
           pip install conan
-          conan remote add davidbourgault https://artifactory.davidbourgault.ca/artifactory/api/conan/conan
           conan config set general.revisions_enabled=1
+          conan remote add davidbourgault https://artifactory.davidbourgault.ca/artifactory/api/conan/conan
+          conan user -p ${{ secrets.CONAN_PASSWORD }} -r davidbourgault david
 
       - name: Create directories
         run: mkdir build
@@ -58,13 +56,16 @@ jobs:
         working-directory: build
         run: conan install .. -s compiler="Visual Studio" -s compiler.version=16 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
 
+      - name: Upload
+        run: conan upload qt/* --remote davidbourgault --all --confirm
+
       - name: Configure
         working-directory: build
-        run: cmake .. -G "${{ matrix.config.generator }}" -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+        run: cmake .. -G "${{ matrix.config.generator }}" -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_INSTALL_PREFIX=/usr
 
       - name: Build
         working-directory: build
-        run: cmake --build . --config ${{ matrix.config.build_type }}
+        run: cmake --build . --config ${{ matrix.config.build_type }} --parallel 2
 
       - name: Test
         working-directory: build
@@ -83,6 +84,8 @@ jobs:
             build/*.deb
 
   release-artifacts:
+    if: ${{ github.ref == 'refs/heads/master'}}
+
     name: Create release
     runs-on: ubuntu-latest
     needs: build-package
