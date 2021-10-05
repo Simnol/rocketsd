@@ -79,11 +79,11 @@ conan install ../../.. -r davidbourgault # --build not needed because provided b
 On the first screen, select 'Continue without code'. Once the main window has
 appeared, select `File > Open > CMake`.
 
-![Open CMake](https://github.com/ngc7293/cutestation/blob/develop/doc/visual-studio-windows/vs-open-cmake.png)
+![Open CMake](https://github.com/ngc7293/rocketsd/blob/develop/doc/visual-studio-windows/vs-open-cmake.png)
 
 Once the project has been loaded, select `Project > CMake Settings`.
 
-![CMake Settings](https://github.com/ngc7293/cutestation/blob/develop/doc/visual-studio-windows/vs-cmake-settings.png)
+![CMake Settings](https://github.com/ngc7293/rocketsd/blob/develop/doc/visual-studio-windows/vs-cmake-settings.png)
 
 A new `CMakePresets.json` file should appear in the solution explorer. It should
 look like this:
@@ -123,11 +123,11 @@ now build the project by pressing `F7` or `Ctrl + Shift + B` or selecting
 Once the build has completed, select the `rockestd.exe (bin\rocketsd.exe)` debug
 target.
 
-![Select Debug Target](https://github.com/ngc7293/cutestation/blob/develop/doc/visual-studio-windows/vs-select-rocketsd.png)
+![Select Debug Target](https://github.com/ngc7293/rocketsd/blob/develop/doc/visual-studio-windows/vs-select-rocketsd.png)
 
 Next, go to `Debug > Debug and Launch Settings for rocketsd`.
 
-![Set Debug Settings](https://github.com/ngc7293/cutestation/blob/develop/doc/visual-studio-windows/vs-debug-settings.png)
+![Set Debug Settings](https://github.com/ngc7293/rocketsd/blob/develop/doc/visual-studio-windows/vs-debug-settings.png)
 
 This should open a new JSON file. Add the `"arg"` element so it looks like this:
 
