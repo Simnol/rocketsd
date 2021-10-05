@@ -47,31 +47,14 @@ cd rocketsd
 From within the previously cloned repo:
 
 ```powershell
-mkdir out/build/windows-default
-cd out/build/windows-default
-conan install ../../.. --build=missing
-```
-
-All packages should download pre-compiled, except for Qt5. It may take some time
-for it to be ready.
-
-### 3.1 Alternatively
-
-On the build machine, an Artifactory instance maintained by @ngc7293 is used to
-provide prebuilt binaries for Qt. You can use it by calling:
-
-```powershell
+# Configure Conan to use custom artifactory with prebuild Qt
 conan config set general.revisions_enabled=1
 conan remote add davidbourgault https://artifactory.davidbourgault.ca/artifactory/api/conan/conan
-```
 
-Before `conan install`. You will then need to add the `-r davidbourgault`
-parameter, as follows:
-
-```powershell
+# Install 3rd parties
 mkdir out/build/windows-default
 cd out/build/windows-default
-conan install ../../.. -r davidbourgault # --build not needed because provided by Artifactory
+conan install ../../.. -r davidbourgault
 ```
 
 ## 4. Configure Visual Studio
