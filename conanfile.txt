@@ -10,7 +10,6 @@ qt:qtserialport=True
 qt:shared=True
 qt:widgets=False
 qt:with_dbus=True
-qt:with_fontconfig=False
 qt:with_freetype=False
 qt:with_libjpeg=False
 qt:with_libpng=False

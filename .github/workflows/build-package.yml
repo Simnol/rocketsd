@@ -49,12 +49,12 @@ jobs:
       - name: Install Third Parties (Ubuntu)
         if: matrix.config.os == 'ubuntu-latest'
         working-directory: build
-        run: conan install .. -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
+        run: conan install .. --build=missing --update -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
 
       - name: Install Third Parties (Windows)
         if: matrix.config.os == 'windows-latest'
         working-directory: build
-        run: conan install .. -s compiler="Visual Studio" -s compiler.version=16 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
+        run: conan install .. --build=missing --update -s compiler="Visual Studio" -s compiler.version=16 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
 
       - name: Upload
         run: conan upload qt/* --remote davidbourgault --all --confirm
