@@ -14,7 +14,6 @@
       - [Cute](#cute)
       - [InfluxDB](#influxdb)
 
-
 ---
 
 `rocketsd` is a "daemon" that bridges between serial input (UART) and external
@@ -35,15 +34,16 @@ same protocol XML file and outputs a C-language with messge/node id defines
 This project has the following dependencies:
 
 - CMake 3.17
+- GCC 10 or later, MSVC 19 or later
 - Ninja (optional)
 - Python 3
 - Conan
-- lxml for `xmlprotoc.py`
+- `lxml` for `xmlprotoc.py`
 
 Additionnally:
 
-- CuteStation
-- InfluxDB
+- [CuteStation](https://github.com/ngc7293/cutestation)
+- InfluxDB 1.x (not compatible with InfluxDB 2)
 
 ## Installing third parties
 
@@ -53,6 +53,8 @@ pip install -r requirements.txt
 mkdir build; cd build;
 conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Debug
 ```
+
+You will most likely need to call conan with `--build=missing` because no matching Qt package is found in conancenter.
 
 ## Compiling
 
@@ -64,21 +66,34 @@ ninja
 
 ## Running
 
-Configuration is not yet done, so `protocol.xml` must be in your current directory.
+rocketsd takes the following arguments
+
+| argument        | type   | description                 |
+|-----------------|--------|-----------------------------|
+| `-c/--config`   | `path` | Path to configuration JSON  |
+| `-p/--protocol` | `path` | Path to protocol definition |
+
+These default to `config.json` and `protocol.xml` respectively.
 
 ```bash
-build/bin/rocketsd
+# e.g.
+build/bin/rocketsd --config config.json --protocol anirniq.xml
 ```
 
 ## Configuration
 
 ### Modules
 
-All modules will be connected with the first element of the "modules" array.
+All modules take the following parameters:
 
-#### FakeModule
+| element     | type           | description                                     |
+|-------------|--------------- |-------------------------------------------------|
+| "id"        | `string`       | Unique identifier for a module                  |
+| "broadcast" | `list<string>` | IDs of mdule that this module will send data to |
 
-FakeModule generates "fake" data points with the formula `α × sin(ω × t)`
+#### Fake
+
+Generates "fake" data points with the formula `α·sin(ωt) + φ`
 
 | element     | type     | description                           |
 |-------------|----------|---------------------------------------|
@@ -86,6 +101,7 @@ FakeModule generates "fake" data points with the formula `α × sin(ω × t)`
 | `frequency` | `float`  | Frequency at which to generate values |
 | `alpha`     | `float`  | Amplitude                             |
 | `omega`     | `float`  | Horizontal scaling factor             |
+| `phi`       | `float`  | Vertical offset                       |
 
 #### Serial
 
@@ -113,8 +129,8 @@ the UNIX socket.
 
 #### InfluxDB
 
-| element       | type     | description                                         |
-|---------------|----------|-----------------------------------------------------|
-| `module`      | `string` | `"influx"`                                          |
-| `url`         | `string` | The HTTP URL InfluxDB is listening on.              |
+| element       | type     | description                                       |
+|---------------|----------|---------------------------------------------------|
+| `module`      | `string` | `"influx"`                                        |
+| `url`         | `string` | The HTTP URL InfluxDB is listening on.            |
 | `buffer_size` | `string` | Batch size for HTTP Posts to InfluxDB. See [here](https://docs.influxdata.com/influxdb/v1.7/tools/api/#request-body-1) |

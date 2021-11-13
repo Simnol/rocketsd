@@ -56,7 +56,7 @@ bool CuteModule::init(json& config)
 
     connect();
 
-    logging::info("CuteModule") << "Successfully init'd CuteStation client" << logging::endl;
+    logging::info("CuteModule") << "Successfully init'd CuteStation client" << logging::tag{"id", id()} << logging::endl;
     return true;
 }
 

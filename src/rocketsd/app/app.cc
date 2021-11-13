@@ -37,6 +37,12 @@ App::App(json config, protocol::ProtocolSP protocol, int argc, char* argv[])
             continue;
         }
 
+        if (modulesById.count(module->id())) {
+            logging::err("App") << "There is already a module with ID " << module->id() << logging::endl;
+            delete module;
+            continue;
+        }
+
         modulesById[module->id()] = module;
         util::json::validate("App", subconfig, util::json::optional(broadcastByModule[module->id()], std::string("broadcast"), std::vector<std::string>{}));
 
@@ -51,8 +57,12 @@ App::App(json config, protocol::ProtocolSP protocol, int argc, char* argv[])
 
     for (auto& module: modulesById) {
         for (auto target: broadcastByModule.at(module.first)) {
-            logging::info("App") << "Connecting " << module.first << " to " << target << logging::endl;
-            connect(module.second, &modules::Module::packetReady, modulesById[target], &modules::Module::onPacket, Qt::QueuedConnection);
+            if (modulesById[target]) {
+                logging::debug("App") << "Connecting " << module.first << " to " << target << logging::endl;
+                connect(module.second, &modules::Module::packetReady, modulesById[target], &modules::Module::onPacket, Qt::QueuedConnection);
+            } else {
+                logging::err("App") << "Could not connect " << module.first << " to " << target << ": it doesn't exist" << logging::endl;
+            }
         }
     }
 }

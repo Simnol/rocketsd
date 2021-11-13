@@ -1,46 +1,57 @@
 {
     "modules": [
         {
-            "id": "fake1",
+            "id": "fake.altitude",
             "module": "fake",
             "frequency": 100,
-            "alpha": 2,
-            "omega": 1,
+            "alpha": 15000,
+            "omega": 0.002,
+            "phi": 15000,
+            "node_id": 3,
+            "message_id": 3,
+
+            "broadcast": ["cute"]
+        },
+        {
+            "id": "fake.velocity",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 1000,
+            "omega": 0.01,
+            "node_id": 3,
+            "message_id": 4,
+
+            "broadcast": ["cute"]
+        },
+        {
+            "id": "fake.gps.lat",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 0.007,
+            "omega": 0.11,
+            "phi": 45.54300,
             "node_id": 3,
             "message_id": 15,
 
-            "broadcast": ["cute1"]
+            "broadcast": ["cute"]
         },
         {
-            "id": "fake2",
+            "id": "fake.gps.lon",
             "module": "fake",
             "frequency": 100,
-            "alpha": 1,
-            "omega": 0.24,
+            "alpha": 0.01,
+            "omega": 0.47,
+            "phi": -73.55000,
             "node_id": 3,
             "message_id": 16,
 
-            "broadcast": ["cute1"]
+            "broadcast": ["cute"]
         },
         {
-            "id": "serial",
-            "module": "serial",
-            "port": "/dev/pts/24",
-            "baudrate": 115200,
-            "broadcast": ["cute1"]
-        },
-        {
-            "id": "cute1",
+            "id": "cute",
             "module": "cute",
             "host": "127.0.0.1",
-            "port": 42857,
-            "broadcast": ["fake1"]
-        },
-        {
-            "id": "influx1",
-            "module": "influx",
-            "url": "http://localhost:8086",
-            "buffer_size": 5000
+            "port": 42857
         }
     ],
     "protocol": "protocol.xml"

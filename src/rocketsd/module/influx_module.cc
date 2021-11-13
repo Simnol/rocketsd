@@ -38,7 +38,7 @@ bool InfluxModule::init(json& config)
         return false;
     }
 
-    logging::info("InfluxModule") << "Successfully init'd InfluxStation client" << logging::endl;
+    logging::info("InfluxModule") << "Successfully init'd InfluxStation client" << logging::tag{"id", id()} << logging::endl;
     return true;
 }
 

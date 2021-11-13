@@ -63,7 +63,7 @@ bool SerialModule::init(json& config)
         return false;
     }
 
-    logging::info("SerialModule") << "Successfully init'd Serial client" << logging::endl;
+    logging::info("SerialModule") << "Successfully init'd Serial client" << logging::tag{"id", id()} << logging::endl;
     return true;
 }
 

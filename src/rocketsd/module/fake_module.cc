@@ -1,6 +1,7 @@
 #include <rocketsd/module/fake_module.hh>
 
 #include <iostream>
+#include <numbers>
 
 #include <cmath>
 
@@ -8,10 +9,6 @@
 
 #include <log/log.hh>
 #include <util/json.hh>
-
-#ifndef M_PI
-#define M_PI 3.1415
-#endif
 
 namespace rocketsd::modules {
 
@@ -37,6 +34,7 @@ bool FakeModule::init(json& config)
         util::json::optional(freq_, "frequency", 1.0),
         util::json::optional(alpha_, "alpha", 1.0),
         util::json::optional(omega_, "omega", 1.0),
+        util::json::optional(phi_, "phi", 0.0),
         util::json::optional(nodeid_, "node_id", 0u),
         util::json::optional(messageid_, "message_id", 0u)
     )) {
@@ -45,7 +43,7 @@ bool FakeModule::init(json& config)
 
     timer_->start(1000 / freq_);
 
-    logging::info("FakeModule") << "Successfully init'd Fake producer" << logging::endl;
+    logging::info("FakeModule") << "Successfully init'd Fake producer" << logging::tag{"id", id()} << logging::endl;
     return true;
 }
 
@@ -54,8 +52,8 @@ void FakeModule::onTimeout()
     radio_packet_t packet;
     packet.node = nodeid_;
     packet.message_id = messageid_;
-    packet.payload.FLOAT = alpha_ * std::sin(n_);
-    n_ += omega_ * ((M_PI * 2) / freq_);
+    packet.payload.FLOAT = alpha_ * std::sin(n_) + phi_;
+    n_ += omega_ * ((std::numbers::pi * 2) / freq_);
     emit packetReady(packet);
 }
 

@@ -12,7 +12,7 @@ class FakeModule : public Module {
 
 private:
     QTimer* timer_;
-    double freq_, n_, alpha_, omega_;
+    double freq_, n_, alpha_, omega_, phi_;
     unsigned int nodeid_, messageid_;
 
 public:
