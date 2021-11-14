@@ -1,23 +1,19 @@
 cmake_minimum_required(VERSION 3.17)
 
-set(HEADERS
-    inc/util/json.hh
-    inc/util/time.hh
-    inc/util/switch.hh
-)
-
 set(SOURCES
-    src/json.cc
-    src/switch.cc
+    json.cc
+    json.hh
+    switch.cc
+    switch.hh
+    time.hh
 )
 
-add_library(cute.util STATIC ${SOURCES} ${HEADERS})
-target_include_directories(cute.util PUBLIC inc/ PRIVATE src/)
+add_library(cute.util STATIC ${SOURCES})
 target_standard_compile_flags(cute.util)
 target_link_libraries(cute.util PUBLIC cute.log CONAN_PKG::qt CONAN_PKG::nlohmann_json)
 
 ## Tests
-set( TESTS
+set(TESTS
     tests/main.cc
     tests/test_json.cc
     tests/test_switch.cc

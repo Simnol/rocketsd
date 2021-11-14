@@ -9,7 +9,6 @@ conan_basic_setup(TARGETS)
 # Qt5
 include(conan_qt_executables_variables)
 include(Qt5CoreMacros)
-include(Qt5WidgetsMacros)
 cmake_policy(SET CMP0100 NEW)
 
 if (UNIX)

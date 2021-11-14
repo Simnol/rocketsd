@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <proto/packet.hh>
+#include <cute/proto/packet.hh>
 
 TEST(Packet, makeData_works)
 {
@@ -16,13 +16,13 @@ TEST(Packet, makeData_works)
     EXPECT_EQ(data.measurements_size(), 5);
 
     EXPECT_EQ(data.measurements(0).source(), "cute.proto.test.1");
-    EXPECT_EQ(data.measurements(0).float_(), 3.14);
+    EXPECT_EQ(data.measurements(0).number(), 3.14);
     EXPECT_EQ(data.measurements(0).timestamp(), 1);
 
     EXPECT_EQ(data.measurements(1).bool_(), false);
     EXPECT_EQ(data.measurements(2).string(), "cstr");
     EXPECT_EQ(data.measurements(3).string(), "cppstr");
-    EXPECT_EQ(data.measurements(4).int_(), 42);
+    EXPECT_EQ(data.measurements(4).state(), 42);
 }
 
 TEST(Packet, makeHandshake_works)
@@ -40,7 +40,7 @@ TEST(Packet, makeHandshake_works)
     EXPECT_EQ(handshake.commands(0).name(), "cute.proto.1");
 
     EXPECT_EQ(handshake.commands(0).type(), cute::proto::Handshake_Command_Type_BOOL);
-    EXPECT_EQ(handshake.commands(1).type(), cute::proto::Handshake_Command_Type_INT);
-    EXPECT_EQ(handshake.commands(2).type(), cute::proto::Handshake_Command_Type_FLOAT);
+    EXPECT_EQ(handshake.commands(1).type(), cute::proto::Handshake_Command_Type_STATE);
+    EXPECT_EQ(handshake.commands(2).type(), cute::proto::Handshake_Command_Type_NUMBER);
     EXPECT_EQ(handshake.commands(3).type(), cute::proto::Handshake_Command_Type_STRING);
 }

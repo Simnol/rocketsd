@@ -1,17 +1,15 @@
-#include <rocketsd/module/cute/cute_module.hh>
 
 #include <sstream>
 
 #include <QTimer>
 
-#include <shared/interfaces/radio/radio_packet.h>
-
 #include <log/log.hh>
 #include <util/json.hh>
 #include <util/time.hh>
 #include <util/switch.hh>
-#include <protocol/name.hh>
-#include <rocketsd/module/cute/qt_socket_adapter.hh>
+
+#include "cute_module.hh"
+#include "qt_socket_adapter.hh"
 
 namespace rocketsd::modules::cute {
 
@@ -23,8 +21,8 @@ struct CuteModule::Priv {
     QtSocketAdapter* socket = nullptr;
 };
 
-CuteModule::CuteModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol)
-    : Module(parent, protocol)
+CuteModule::CuteModule(QObject* parent)
+    : Module(parent)
     , _d(new CuteModule::Priv)
 {
 }
@@ -56,38 +54,18 @@ bool CuteModule::init(json& config)
 
     connect();
 
-    logging::info("CuteModule") << "Successfully init'd CuteStation client" << logging::endl;
+    logging::info("CuteModule") << "Successfully init'd CuteStation client" << logging::tag{"id", id()} << logging::endl;
     return true;
 }
 
-void CuteModule::onPacket(radio_packet_t packet)
+void CuteModule::onMessage(Message message)
 {
-    rocketsd::protocol::Node* node;
-    rocketsd::protocol::Message* message;
-
-    if ((node = (*protocol_)[packet.node]) == nullptr) {
-        logging::warn("CuteModule") << "Could not find Node with id=" << packet.node << ": ignoring" << logging::endl;
-        return;
+    if (message.measurement.timestamp() == 0) {
+        message.measurement.set_timestamp(util::time::now<std::milli>());
     }
-
-    if ((message = (*node)[packet.message_id]) == nullptr) {
-        logging::warn("CuteModule") << "Could not find Message with id=" << packet.node << "for Node '" << node->name() << "': ignoring" << logging::endl;
-        return;
-    }
-
-    ::cute::proto::Data* data = new ::cute::proto::Data();
-    ::cute::proto::Measurement& measurement = *(data->add_measurements());
-    measurement.set_source(std::string("anirniq.") + std::string(node->name()) + "." + std::string(message->name()));
-    measurement.set_timestamp(util::time::now<std::milli>());
-
-    util::switcher::string(std::string(message->type()), {
-        {"int", [&packet, &measurement]() { measurement.set_int_(packet.payload.INT); }},
-        {"uint", [&packet, &measurement]() { measurement.set_int_(packet.payload.UINT); }},
-        {"float", [&packet, &measurement]() { measurement.set_float_(packet.payload.FLOAT); }},
-    }, [&message]() {logging::err("CuteModule") << "Unhandled payload type '" << message->type() << "'" << logging::endl; });
 
     std::shared_ptr<::cute::proto::Packet> cutepacket = std::make_shared<::cute::proto::Packet>();
-    cutepacket->set_allocated_data(data);
+    cutepacket->mutable_data()->add_measurements()->Swap(&message.measurement);
     dispatch(cutepacket);
 }
 
@@ -124,34 +102,7 @@ void CuteModule::onSocketData()
         }
 
         for (const ::cute::proto::Measurement& measurement : cutepacket->data().measurements()) {
-            rocketsd::protocol::Node* node = nullptr;
-            rocketsd::protocol::Message* message = nullptr;
-
-            if (rocketsd::protocol::from_cute_name(protocol_.get(), measurement.source(), &node, &message)) {
-                radio_packet_t packet;
-                memset((void*)&packet, 0, sizeof(radio_packet_t));
-
-                packet.node = node->id();
-                packet.message_id = message->id();
-                
-                switch (measurement.value_case()) {
-                    case ::cute::proto::Measurement::kBool:
-                        packet.payload.INT = 1;
-                        break;
-                    case ::cute::proto::Measurement::kInt:
-                        packet.payload.INT = measurement.int_();
-                        break;
-                    case ::cute::proto::Measurement::kFloat:
-                        packet.payload.FLOAT = measurement.float_();
-                        break;
-                    default:
-                        logging::info("CuteModule") <<  "Received unhandled message type from CuteStation" << logging::endl;
-                        return;
-                }
-        
-                packet.checksum = radio_compute_crc(&packet);
-                emit packetReady(packet);
-            }
+            emit messageReady({this, measurement});
         }
     }
 }
@@ -188,15 +139,15 @@ void CuteModule::onConnected()
     ::cute::proto::Handshake* handshake = new ::cute::proto::Handshake();
     handshake->set_name("rocketsd");
 
-    for (std::pair<int, rocketsd::protocol::Node*> node: *protocol_) {
-        for (std::pair<int, rocketsd::protocol::Message*> message: *(node.second)) {
-            if (message.second->command()) {
-                auto* command = handshake->add_commands();
-                command->set_name(rocketsd::protocol::to_cute_name(protocol_.get(), node.second, message.second));
-                command->set_type(::cute::proto::Handshake_Command_Type_BOOL);
-            }
-        }
-    }
+    // for (std::pair<int, rocketsd::protocol::Node*> node: *protocol_) {
+    //     for (std::pair<int, rocketsd::protocol::Message*> message: *(node.second)) {
+    //         if (message.second->command()) {
+    //             auto* command = handshake->add_commands();
+    //             command->set_name(rocketsd::protocol::to_cute_name(protocol_.get(), node.second, message.second));
+    //             command->set_type(::cute::proto::Handshake_Command_Type_BOOL);
+    //         }
+    //     }
+    // }
 
     std::shared_ptr<::cute::proto::Packet> cutepacket = std::make_shared<::cute::proto::Packet>();
     cutepacket->set_allocated_handshake(handshake);

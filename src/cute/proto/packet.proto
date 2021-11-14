@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package cute.proto;
+
+message Handshake {
+    string name = 1;
+
+    message Command {
+        enum Type {
+            STATE = 0;
+            NUMBER = 1;
+            STRING = 2;
+            BOOL = 3;
+        }
+        
+        string name = 1;
+        Type type = 2;
+    }
+    repeated Command commands = 10;
+}
+
+message Measurement {
+    uint64 timestamp = 1; // In milliseconds since Epoch
+    string source = 2;
+
+    oneof value {
+        double number = 10;             // You should always use `number` for numeric data, even if it was originally
+                                        // typed as Int. This will not cause a loss of precision for values within
+                                        // [-2⁵³, 2⁵³]. Cute's widget expect double values for numeric (charts, gauges,
+                                        // etc.)
+        sint64 state = 11;              // State is meant to be used to represent values that are discrete like Enums.
+        string string = 12;
+        bool bool = 13;
+    };
+}
+
+message Data {
+    repeated Measurement measurements = 1;
+}
+
+message Packet {
+    oneof payload {
+        Handshake handshake = 1;
+        Data data = 2;
+    }
+}

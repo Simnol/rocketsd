@@ -22,8 +22,8 @@ jobs:
               name: Ubuntu GCC,
               os: ubuntu-latest,
               build_type: Release,
-              cc: gcc,
-              cxx: g++,
+              cc: gcc-10,
+              cxx: g++-10,
               generator: Ninja,
             }
     steps:
@@ -49,18 +49,21 @@ jobs:
       - name: Install Third Parties (Ubuntu)
         if: matrix.config.os == 'ubuntu-latest'
         working-directory: build
-        run: conan install .. -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
+        run: conan install .. --build=missing --update -s compiler.version=10 -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
 
       - name: Install Third Parties (Windows)
         if: matrix.config.os == 'windows-latest'
         working-directory: build
-        run: conan install .. -s compiler="Visual Studio" -s compiler.version=16 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
+        run: conan install .. --build=missing --update -s compiler="Visual Studio" -s compiler.version=16 -s build_type=${{ matrix.config.build_type }} -r davidbourgault
 
       - name: Upload
         run: conan upload qt/* --remote davidbourgault --all --confirm
 
       - name: Configure
         working-directory: build
+        env:
+          CC: ${{ matrix.config.cc }}
+          CXX: ${{ matrix.config.cxx }}
         run: cmake .. -G "${{ matrix.config.generator }}" -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DCMAKE_INSTALL_PREFIX=/usr
 
       - name: Build

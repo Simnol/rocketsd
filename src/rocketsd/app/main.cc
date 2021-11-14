@@ -11,7 +11,6 @@
 
 #include <log/log.hh>
 #include <log/ostream_logsink.hh>
-#include <protocol/protocol_parser.hh>
 
 namespace {
 
@@ -26,7 +25,6 @@ void usage()
 
 optional arguments:
     -c, --config    Path to configuration JSON file. Defaults to "config.json".
-    -p, --protocol  Path to protocol XML file. Defaults to "protocol.xml".
     -h, --help      Displays this message.
 )~~" << std::endl;
 }
@@ -37,13 +35,6 @@ std::pair<LaunchArgs, bool> parseArgs(int argc, char* argv[], LaunchArgs args = 
         if (strcmp(argv[i], "-c") == 0 || strcmp(argv[i], "--config") == 0) {
             if (i < argc - 1) {
                 args.config_path = argv[++i];
-                continue;
-            }
-        }
-
-        if (strcmp(argv[i], "-p") == 0 || strcmp(argv[i], "--protocol") == 0) {
-            if (i < argc - 1) {
-                args.xml_path = argv[++i];
                 continue;
             }
         }
@@ -75,8 +66,7 @@ int main(int argc, char* argv[])
     logging::Log::get().addSink(&cout);
 
     auto [args, error] = parseArgs(argc, argv, { 
-        .config_path = "config.json",
-        .xml_path = "protocol.xml"
+        .config_path = "config.json"
     });
 
     if (error) {
@@ -85,11 +75,6 @@ int main(int argc, char* argv[])
 
     if (!std::filesystem::is_regular_file(args.config_path)) {
         logging::err("rocketsd") << "Could not find configuration file " << args.config_path << logging::endl;
-        return clean_exit(EXIT_FAILURE);
-    }
-
-    if (!std::filesystem::is_regular_file(args.xml_path)) {
-        logging::err("rocketsd") << "Could not find protocol file " << args.xml_path << logging::endl;
         return clean_exit(EXIT_FAILURE);
     }
 
@@ -102,15 +87,7 @@ int main(int argc, char* argv[])
         return clean_exit(EXIT_FAILURE);
     }
 
-    rocketsd::protocol::ProtocolParser parser;
-    rocketsd::protocol::ProtocolSP protocol = rocketsd::protocol::ProtocolSP(parser.parse(args.xml_path));
-
-    if (!protocol) {
-        logging::err("rocketsd") <<  "Could not load XML protocol" << logging::endl;
-        return clean_exit(EXIT_FAILURE);
-    }
-
-    rocketsd::app::App app(config, protocol, argc, (char**)argv);
+    rocketsd::app::App app(config, argc, (char**)argv);
     signal(SIGINT, [](int /*a*/){ QCoreApplication::quit(); });
     return clean_exit(app.exec());
 }

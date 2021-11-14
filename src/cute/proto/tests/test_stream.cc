@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include <proto/packet.hh>
+#include <cute/proto/packet.hh>
 
 TEST(DelimitedMessageStream, read_write_works)
 {

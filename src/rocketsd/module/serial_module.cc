@@ -2,6 +2,10 @@
 
 #include <log/log.hh>
 #include <util/json.hh>
+#include <util/time.hh>
+#include <util/switch.hh>
+#include <rocketsd/protocol/name.hh>
+#include <rocketsd/protocol/protocol_parser.hh>
 
 namespace rocketsd::modules {
 
@@ -27,10 +31,32 @@ namespace {
 
         return (error >= 0 && error < sizeof(errorStrings)) ? errorStrings[error] : "Unknown error";
     }
+
+    bool buildMeasurement(protocol::Protocol& protocol, radio_packet_t& packet, cute::proto::Measurement& measurement)
+    {
+        auto* node = protocol[packet.node];
+        if (!node) {
+            return false;
+        }
+
+        auto* message = (*node)[packet.message_id];
+        if (!message) {
+            return false;
+        }
+
+        measurement.set_source(protocol::to_cute_name(&protocol, node, message));
+        measurement.set_timestamp(util::time::now<std::milli>());
+
+        util::switcher::string(std::string(message->type()), {
+            {"int",   [&packet, &measurement]() { measurement.set_state(packet.payload.INT); }},
+            {"float", [&packet, &measurement]() { measurement.set_number(packet.payload.FLOAT); }},
+        }, []() { logging::err("SerialModule") << "Unsupported payload type" << logging::endl; });
+        return measurement.value_case() != cute::proto::Measurement::VALUE_NOT_SET;
+    }
 }
 
-SerialModule::SerialModule(QObject* parent, protocol::ProtocolSP protocol)
-    : Module(parent, protocol)
+SerialModule::SerialModule(QObject* parent)
+    : Module(parent)
 {
 }
 
@@ -44,33 +70,75 @@ bool SerialModule::init(json& config)
         return false;
     }
 
-    std::string port;
+    std::string port, protocol_path;
     unsigned int baudrate;
 
     if (!util::json::validate("SerialModule", config,
         util::json::required(port, "port"),
+        util::json::required(protocol_path, "protocol"),
         util::json::required(baudrate, "baudrate")
     )) {
         return false;
     }
 
-    serialport_ = new QSerialPort(port.c_str());
+    if (!std::filesystem::is_regular_file(protocol_path)) {
+        logging::err("SerialModule") << "Invalid protocol path '" << protocol_path << "'" << logging::endl;
+        return false;
+    }
+
+    protocol::ProtocolParser parser;
+    protocol_ = protocol::ProtocolSP(parser.parse(std::filesystem::path(protocol_path)));
+
+    if (!protocol_) {
+        logging::err("SerialModule") << "Could not parse protocol definition" << logging::endl;
+        return false;
+    }
+
+    serialport_ = new QSerialPort(port.c_str(), this);
     serialport_->setBaudRate(baudrate);
 
     connect(serialport_, &QSerialPort::readyRead, this, &SerialModule::onData);
     connect(serialport_, &QSerialPort::errorOccurred, this, &SerialModule::onError);
     if (!serialport_->open(QIODevice::ReadWrite)) {
+        logging::err("SerialModule") << "Could not open serial port" << logging::endl;
         return false;
     }
 
-    logging::info("SerialModule") << "Successfully init'd Serial client" << logging::endl;
+    logging::info("SerialModule") << "Successfully init'd Serial client" << logging::tag{"id", id()} << logging::endl;
     return true;
 }
 
-void SerialModule::onPacket(radio_packet_t packet)
+void SerialModule::onMessage(Message msg)
 {
-    //FIXME: This has not been tested whatsoever
-    serialport_->write((char*)&packet, sizeof(radio_packet_t));
+    protocol::Node* node;
+    protocol::Message* message;
+
+    protocol::from_cute_name(protocol_.get(), msg.measurement.source(), &node, &message);
+
+    if (node && message) {
+        radio_packet_t packet;
+        memset(&packet, 0, sizeof(radio_packet_t));
+
+        packet.node = node->id();
+        packet.message_id = message->id();
+        
+        switch (msg.measurement.value_case()) {
+            case cute::proto::Measurement::kNumber:
+                packet.payload.FLOAT = msg.measurement.number();
+                break;
+            case cute::proto::Measurement::kState:
+                packet.payload.INT = msg.measurement.state();
+                break;
+            default:
+                logging::err("SerialModule") << "Unsupported payload type" << logging::endl;
+                return;
+        }
+
+        packet.checksum = radio_compute_crc(&packet);
+        serialport_->write((char*)&packet, sizeof(radio_packet_t));
+    } else {
+        logging::warn("SerialModule") << "Received measurement not covered in protocol: ignoring" << logging::tag("name", msg.measurement.source()) << logging::endl;
+    }
 }
 
 void SerialModule::onData()
@@ -101,7 +169,13 @@ void SerialModule::onData()
             packet.checksum = buffer_[10];
 
             if (packet.checksum == radio_compute_crc(&packet)) {
-                emit packetReady(packet);
+                cute::proto::Measurement measurement;
+                if (buildMeasurement(*protocol_, packet, measurement)) {
+                    emit messageReady({this, measurement});
+                } else {
+                    logging::err("SerialModule") << "Failed to build measurement" << logging::endl;
+                }
+
                 buffer_.erase(buffer_.begin(), buffer_.begin() + sizeof(radio_packet_t));
             } else {
                 logging::debug("SerialModule") << "Invalid CRC" 

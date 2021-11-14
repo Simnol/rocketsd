@@ -12,11 +12,11 @@ class FakeModule : public Module {
 
 private:
     QTimer* timer_;
-    double freq_, n_, alpha_, omega_;
-    unsigned int nodeid_, messageid_;
+    double freq_, n_, alpha_, omega_, phi_;
+    std::string mid_;
 
 public:
-    FakeModule(QObject* parent, protocol::ProtocolSP protocol);
+    FakeModule(QObject* parent);
     ~FakeModule() override;
 
     bool init(json& config) override;
@@ -24,7 +24,7 @@ public:
     std::string type() const override { return "Fake"; }
 
 public slots:
-    void onPacket(radio_packet_t packet) override;
+        void onMessage(Message message) override;
 
 private slots:
     void onTimeout();
