@@ -1,4 +1,4 @@
-#include "proto/packet.hh"
+#include "packet.hh"
 
 namespace cute::proto {
 

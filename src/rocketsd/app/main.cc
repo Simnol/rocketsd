@@ -11,7 +11,7 @@
 
 #include <log/log.hh>
 #include <log/ostream_logsink.hh>
-#include <protocol/protocol_parser.hh>
+#include <rocketsd/protocol/protocol_parser.hh>
 
 namespace {
 

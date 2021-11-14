@@ -1,4 +1,4 @@
-#include "protocol/protocol_parser.hh"
+#include "protocol_parser.hh"
 
 #include <filesystem>
 #include <fstream>

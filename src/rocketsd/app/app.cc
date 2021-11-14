@@ -12,7 +12,7 @@
 
 #include <log/log.hh>
 #include <rocketsd/module/module_factory.hh>
-#include <protocol/protocol_parser.hh>
+#include <rocketsd/protocol/protocol_parser.hh>
 #include <util/json.hh>
 
 using json = nlohmann::json;

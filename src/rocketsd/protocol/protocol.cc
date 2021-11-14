@@ -1,4 +1,4 @@
-#include "protocol/protocol.hh"
+#include "protocol.hh"
 
 namespace rocketsd::protocol {
 

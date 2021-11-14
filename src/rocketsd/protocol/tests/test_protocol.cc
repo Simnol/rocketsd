@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include <protocol/protocol.hh>
-#include <protocol/protocol_parser.hh>
-#include <protocol/name.hh>
+#include <rocketsd/protocol/protocol.hh>
+#include <rocketsd/protocol/protocol_parser.hh>
+#include <rocketsd/protocol/name.hh>
 
 const std::string test_xml = R"(
 <protocol name="prot1">

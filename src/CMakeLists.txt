@@ -1,9 +1,8 @@
-include_directories(AFTER ${CMAKE_SOURCE_DIR}/src)
+include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(checksum)
 add_subdirectory(log)
-add_subdirectory(proto)
-add_subdirectory(protocol)
+add_subdirectory(cute)
 add_subdirectory(rocketsd)
 add_subdirectory(shared)
 add_subdirectory(util)

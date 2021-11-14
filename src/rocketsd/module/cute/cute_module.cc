@@ -10,7 +10,7 @@
 #include <util/json.hh>
 #include <util/time.hh>
 #include <util/switch.hh>
-#include <protocol/name.hh>
+#include <rocketsd/protocol/name.hh>
 #include <rocketsd/module/cute/qt_socket_adapter.hh>
 
 namespace rocketsd::modules::cute {

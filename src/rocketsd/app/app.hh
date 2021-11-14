@@ -9,7 +9,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include <protocol/protocol.hh>
+#include <rocketsd/protocol/protocol.hh>
 
 namespace rocketsd::app {
 

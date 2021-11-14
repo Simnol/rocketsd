@@ -5,7 +5,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include <protocol/protocol.hh>
+#include <rocketsd/protocol/protocol.hh>
 #include "shared/interfaces/radio/radio_packet.h"
 
 using json = nlohmann::json;

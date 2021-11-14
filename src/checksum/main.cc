@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <shared/interfaces/radio/radio_packet.h>
-#include <protocol/protocol_parser.hh>
+#include <rocketsd/protocol/protocol_parser.hh>
 #include <util/switch.hh>
 
 

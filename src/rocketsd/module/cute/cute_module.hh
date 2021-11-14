@@ -7,7 +7,7 @@
 
 #include <QAbstractSocket>
 
-#include <proto/packet.hh>
+#include <cute/proto/packet.hh>
 
 namespace rocketsd::modules::cute {
 

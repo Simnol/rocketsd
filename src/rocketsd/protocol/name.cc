@@ -1,4 +1,4 @@
-#include "protocol/name.hh"
+#include "name.hh"
 
 #include <sstream>
 
