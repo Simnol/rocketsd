@@ -1,5 +1,3 @@
-#include "app.hh"
-
 #include <iostream>
 #include <fstream>
 #include <unordered_map>
@@ -12,28 +10,28 @@
 
 #include <log/log.hh>
 #include <rocketsd/module/module_factory.hh>
-#include <rocketsd/protocol/protocol_parser.hh>
 #include <util/json.hh>
+
+#include "app.hh"
 
 using json = nlohmann::json;
 
-Q_DECLARE_METATYPE(radio_packet_t)
+Q_DECLARE_METATYPE(rocketsd::modules::Message)
 
 namespace rocketsd::app {
 
-App::App(json config, protocol::ProtocolSP protocol, int argc, char* argv[])
+App::App(json config, int argc, char* argv[])
     : QCoreApplication(argc, argv)
-    , protocol_(protocol)
 {
-    qRegisterMetaType<radio_packet_t>();
-
+    qRegisterMetaType<rocketsd::modules::Message>();
 
     std::unordered_map<std::string, modules::Module*> modulesById;
     std::unordered_map<std::string, std::vector<std::string>> broadcastByModule;
 
     for (auto& subconfig : config["modules"]) {
         modules::Module* module;
-        if (!(module = modules::ModuleFactory::build(protocol_, subconfig))) {
+        if (!(module = modules::ModuleFactory::build(subconfig))) {
+            logging::err("App") << "Failed to create module!" << logging::endl;
             continue;
         }
 
@@ -59,7 +57,7 @@ App::App(json config, protocol::ProtocolSP protocol, int argc, char* argv[])
         for (auto target: broadcastByModule.at(module.first)) {
             if (modulesById[target]) {
                 logging::debug("App") << "Connecting " << module.first << " to " << target << logging::endl;
-                connect(module.second, &modules::Module::packetReady, modulesById[target], &modules::Module::onPacket, Qt::QueuedConnection);
+                connect(module.second, &modules::Module::messageReady, modulesById[target], &modules::Module::onMessage, Qt::QueuedConnection);
             } else {
                 logging::err("App") << "Could not connect " << module.first << " to " << target << ": it doesn't exist" << logging::endl;
             }

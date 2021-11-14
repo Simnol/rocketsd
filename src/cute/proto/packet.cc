@@ -1,4 +1,4 @@
-#include "packet.hh"
+#include <cute/proto/packet.hh>
 
 namespace cute::proto {
 
@@ -17,8 +17,8 @@ void makeData(proto::Data& data, std::initializer_list<_measurement_initializer>
 
         std::visit(overloaded {
             [&measurement](bool v) { measurement.set_bool_(v); },
-            [&measurement](int v) { measurement.set_int_(v); },
-            [&measurement](double v) { measurement.set_float_(v); },
+            [&measurement](int v) { measurement.set_state(v); },
+            [&measurement](double v) { measurement.set_number(v); },
             [&measurement](const char* v) { measurement.set_string(v); },
             [&measurement](const std::string& v) { measurement.set_string(v); },
             [](auto v) { assert(false); }
@@ -39,9 +39,9 @@ void makeHandshake(proto::Handshake& handshake, const std::string& name, std::in
         if (init.t == typeid(bool)) {
             command.set_type(proto::Handshake_Command_Type_BOOL);
         } else if (init.t == typeid(int)) {
-            command.set_type(proto::Handshake_Command_Type_INT);
+            command.set_type(proto::Handshake_Command_Type_STATE);
         } else if (init.t == typeid(double)) {
-            command.set_type(proto::Handshake_Command_Type_FLOAT);
+            command.set_type(proto::Handshake_Command_Type_NUMBER);
         } else if (init.t == typeid(std::string)) {
             command.set_type(proto::Handshake_Command_Type_STRING);
         } else {

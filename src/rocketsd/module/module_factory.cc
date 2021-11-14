@@ -10,10 +10,11 @@
 #include <rocketsd/module/fake_module.hh>
 #include <rocketsd/module/influx_module.hh>
 #include <rocketsd/module/serial_module.hh>
+#include <rocketsd/module/dumper_module.hh>
 
 namespace rocketsd::modules {
 
-Module* ModuleFactory::build(protocol::ProtocolSP protocol, json& config, QObject* parent)
+Module* ModuleFactory::build(json& config, QObject* parent)
 {
     Module* module;
 
@@ -23,13 +24,15 @@ Module* ModuleFactory::build(protocol::ProtocolSP protocol, json& config, QObjec
     }
 
     if (type == "cute") {
-        module = new cute::CuteModule(parent, protocol);
+        module = new cute::CuteModule(parent);
     } else if (type == "influx") {
-        module = new InfluxModule(parent, protocol);
+        module = new InfluxModule(parent);
     } else if (type == "fake") {
-        module = new FakeModule(parent, protocol);
+        module = new FakeModule(parent);
     } else if (type == "serial") {
-        module = new SerialModule(parent, protocol);
+        module = new SerialModule(parent);
+    } else if (type == "dumper") {
+        module = new DumperModule(parent);
     } else {
         logging::warn("ModuleFactory") << "Unknown module type '" << type << "'" << logging::endl;
         return nullptr;

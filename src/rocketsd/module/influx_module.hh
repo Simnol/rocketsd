@@ -22,7 +22,7 @@ private:
     int lines_;
 
 public:
-    InfluxModule(QObject* parent, protocol::ProtocolSP protocol);
+    InfluxModule(QObject* parent);
     ~InfluxModule() override;
 
     bool init(json& config) override;
@@ -30,7 +30,7 @@ public:
     std::string type() const override { return "InfluxDB"; }
 
 public slots:
-    void onPacket(radio_packet_t packet) override;
+    void onMessage(Message message) override;
 
 private slots:
     void onError(QNetworkReply* reply);

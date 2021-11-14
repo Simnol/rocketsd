@@ -89,3 +89,35 @@ TEST(protocol, from_cute_name_finds_correct_nodes)
     EXPECT_EQ(message->type(), "float");
     delete protocol;
 }
+
+TEST(protocol, from_cute_name_returns_nullptr_if_node_doesnt_exist)
+{
+    rocketsd::protocol::ProtocolParser parser;
+    rocketsd::protocol::Protocol* protocol;
+
+    rocketsd::protocol::Node* node;
+    rocketsd::protocol::Message* message;
+
+    protocol = parser.parse(test_xml);
+    EXPECT_FALSE(rocketsd::protocol::from_cute_name(protocol, "prot1.node3.msg2", &node, &message));
+    EXPECT_EQ(node, nullptr);
+    EXPECT_EQ(message, nullptr);
+
+    delete protocol;
+}
+
+TEST(protocol, from_cute_name_returns_nullptr_if_message_doesnt_exist)
+{
+    rocketsd::protocol::ProtocolParser parser;
+    rocketsd::protocol::Protocol* protocol;
+
+    rocketsd::protocol::Node* node;
+    rocketsd::protocol::Message* message;
+
+    protocol = parser.parse(test_xml);
+    EXPECT_FALSE(rocketsd::protocol::from_cute_name(protocol, "prot1.node1.msg6", &node, &message));
+    EXPECT_EQ(node, nullptr);
+    EXPECT_EQ(message, nullptr);
+
+    delete protocol;
+}

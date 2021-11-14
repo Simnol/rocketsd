@@ -60,14 +60,14 @@ bool from_cute_name(const Protocol* protocol, const std::string& name, Node** no
     }
 
     *node = find<rocketsd::protocol::Node, rocketsd::protocol::Protocol>(protocol, token);
-    if (!node) {
+    if (!*node) {
         *node = nullptr;
         return false;
     }
 
     token = name.substr(ss.tellg());
     *message = find<rocketsd::protocol::Message, rocketsd::protocol::Node>(*node, token);
-    if (!message) {
+    if (!*message) {
         *node = nullptr;
         *message = nullptr;
         return false;

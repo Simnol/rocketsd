@@ -11,7 +11,7 @@ namespace rocketsd::modules {
 
 class ModuleFactory {
 public:
-    static Module* build(protocol::ProtocolSP protocol, json& config, QObject* parent = nullptr);
+    static Module* build(json& config, QObject* parent = nullptr);
 };
 
 }

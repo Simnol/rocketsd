@@ -16,7 +16,7 @@ class CuteModule: public Module {
     struct Priv;
 
 public:
-    CuteModule(QObject* parent, rocketsd::protocol::ProtocolSP protocol);
+    CuteModule(QObject* parent);
     ~CuteModule() override;
 
     bool init(json& config) override;
@@ -28,7 +28,7 @@ private:
     void dispatch(std::shared_ptr<::cute::proto::Packet> packet);
 
 public slots:
-    void onPacket(radio_packet_t packet) override;
+    void onMessage(Message message) override;
     void onSocketData();
 
 private slots:

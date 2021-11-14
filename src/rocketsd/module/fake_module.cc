@@ -1,19 +1,17 @@
-#include <rocketsd/module/fake_module.hh>
-
 #include <iostream>
 #include <numbers>
 
 #include <cmath>
 
-#include "shared/interfaces/id.h"
-
 #include <log/log.hh>
 #include <util/json.hh>
 
+#include "fake_module.hh"
+
 namespace rocketsd::modules {
 
-FakeModule::FakeModule(QObject* parent, protocol::ProtocolSP protocol)
-    : Module(parent, protocol)
+FakeModule::FakeModule(QObject* parent)
+    : Module(parent)
 {
     timer_ = new QTimer(this);
     connect(timer_, &QTimer::timeout, this, &FakeModule::onTimeout);
@@ -35,8 +33,7 @@ bool FakeModule::init(json& config)
         util::json::optional(alpha_, "alpha", 1.0),
         util::json::optional(omega_, "omega", 1.0),
         util::json::optional(phi_, "phi", 0.0),
-        util::json::optional(nodeid_, "node_id", 0u),
-        util::json::optional(messageid_, "message_id", 0u)
+        util::json::required(mid_, "mid")
     )) {
         return false;
     }
@@ -49,17 +46,16 @@ bool FakeModule::init(json& config)
 
 void FakeModule::onTimeout()
 {
-    radio_packet_t packet;
-    packet.node = nodeid_;
-    packet.message_id = messageid_;
-    packet.payload.FLOAT = alpha_ * std::sin(n_) + phi_;
+    cute::proto::Measurement measurement;
+    measurement.set_source(mid_);
+    measurement.set_number(alpha_ * std::sin(n_) + phi_);
     n_ += omega_ * ((std::numbers::pi * 2) / freq_);
-    emit packetReady(packet);
+    emit messageReady({this, measurement});
 }
 
-void FakeModule::onPacket(radio_packet_t packet)
+void FakeModule::onMessage(Message message)
 {
-    logging::info("FakeModule") << "Received packet: node=" << +packet.node << " message=" << +packet.message_id << " crc=" << +packet.checksum << logging::endl;
+    logging::info("FakeModule") << "Received measurement: " << message.measurement.source() << logging::endl;
 }
 
 } // namespace

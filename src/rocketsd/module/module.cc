@@ -4,9 +4,8 @@
 
 namespace rocketsd::modules {
 
-Module::Module(QObject* parent, protocol::ProtocolSP protocol)
+Module::Module(QObject* parent)
     : QObject(parent)
-    , protocol_(protocol)
 {
 }
 

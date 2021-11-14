@@ -10,8 +10,8 @@
 
 namespace rocketsd::modules {
 
-InfluxModule::InfluxModule(QObject* parent, protocol::ProtocolSP protocol)
-    : Module(parent, protocol)
+InfluxModule::InfluxModule(QObject* parent)
+    : Module(parent)
     , network_(new QNetworkAccessManager(this))
     , lines_(0)
 {
@@ -42,32 +42,31 @@ bool InfluxModule::init(json& config)
     return true;
 }
 
-void InfluxModule::onPacket(radio_packet_t packet)
+void InfluxModule::onMessage(Message message)
 {
-    protocol::Node* node;
-    protocol::Message* message;
+    std::stringstream local;
+    local << message.source << " ";
 
-    if ((node = (*protocol_)[packet.node]) == nullptr) {
-        logging::warn("CuteDeserializer") << "Could not find Node with id=" << packet.node << ": ignoring" << logging::endl;
-        return;
+    switch (message.measurement.value_case()) {
+        case cute::proto::Measurement::kBool:
+            local << (message.measurement.bool_() ? "true" : "false");
+            break;
+        case cute::proto::Measurement::kNumber:    
+            local << message.measurement.number();
+            break;
+        case cute::proto::Measurement::kState:
+            local << (message.measurement.state());
+            break;
+        case cute::proto::Measurement::kString:
+            local << (message.measurement.string());
+            break;
+        case cute::proto::Measurement::VALUE_NOT_SET:
+            logging::err("InfluxModule") << "Received invalid measurement, ignoring" << logging::endl;
+            return;
     }
-
-    if ((message = (*node)[packet.message_id]) == nullptr) {
-        logging::warn("CuteDeserializer") << "Could not find Message with id=" << packet.node << "for Node '" << node->name() << "': ignoring" << logging::endl;
-        return;
-    }
-
-
-    std::string measurement = std::string(message->name());
-    buffer_ << measurement << ",node=" << node->name() << " value=";
-    
-    util::switcher::string(std::string(message->type()), {
-        {"int", [this, &packet]() {buffer_ << packet.payload.INT; }},
-        {"uint", [this, &packet]() {buffer_ << packet.payload.UINT; }},
-        {"float", [this, &packet]() {buffer_ << packet.payload.FLOAT; }}
-    });
      
-    buffer_ << " " << util::time::now<std::nano>() << std::endl;
+    local << " " << util::time::now<std::nano>() << std::endl;
+    buffer_ << local.str();
     lines_++;
 
     if (lines_ >= max_lines_) {

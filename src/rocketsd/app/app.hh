@@ -9,17 +9,14 @@
 
 #include <nlohmann/json.hpp>
 
-#include <rocketsd/protocol/protocol.hh>
-
 namespace rocketsd::app {
 
 class App : public QCoreApplication {
 private:
-    protocol::ProtocolSP protocol_;
     std::vector<QThread*> workers_;
 
 public:
-    App(nlohmann::json config, protocol::ProtocolSP procotol, int argc, char* argv[]);
+    App(nlohmann::json config, int argc, char* argv[]);
     ~App();
 };
 

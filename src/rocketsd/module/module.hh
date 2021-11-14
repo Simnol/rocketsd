@@ -6,7 +6,9 @@
 #include <nlohmann/json.hpp>
 
 #include <rocketsd/protocol/protocol.hh>
-#include "shared/interfaces/radio/radio_packet.h"
+#include <shared/interfaces/radio/radio_packet.h>
+
+#include "message.hh"
 
 using json = nlohmann::json;
 
@@ -16,11 +18,10 @@ class Module : public QObject {
     Q_OBJECT
 
 protected:
-    protocol::ProtocolSP protocol_;
     std::string id_;
 
 public:
-    Module(QObject* parent, protocol::ProtocolSP protocol);
+    Module(QObject* parent);
     virtual ~Module();
 
     virtual bool init(json& config);
@@ -29,10 +30,10 @@ public:
     virtual std::string type() const = 0;
 
 public slots:
-    virtual void onPacket(radio_packet_t packet) = 0;
+    virtual void onMessage(Message message) = 0;
 
 signals:
-    void packetReady(radio_packet_t packet);
+    void messageReady(Message message);
 };
 
 } // namespace
