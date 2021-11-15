@@ -1,0 +1,90 @@
+{
+    "modules": [
+        {
+            "id": "fake.altitude",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 15000,
+            "omega": 0.002,
+            "phi": 15000,
+            "mid": "anirniq.acquisition.altitude",
+
+            "broadcast": ["serial"]
+        },
+        {
+            "id": "fake.velocity",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 1000,
+            "omega": 0.01,
+            "mid": "anirniq.acquisition.vertical_velocity",
+
+            "broadcast": ["serial"]
+        },
+        {
+            "id": "fake.accel.x",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 1,
+            "omega": 1,
+            "mid": "anirniq.acquisition.acceleration.x",
+
+            "broadcast": ["serial"]
+        },
+        {
+            "id": "fake.accel.y",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 12.3,
+            "omega": 0.1,
+            "mid": "anirniq.acquisition.acceleration.y",
+
+            "broadcast": ["serial"]
+        },
+        {
+            "id": "fake.accel.z",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 1,
+            "omega": 0.9,
+            "mid": "anirniq.acquisition.acceleration.z",
+
+            "broadcast": ["serial"]
+        },
+        {
+            "id": "fake.gps.lat",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 0.007,
+            "omega": 0.11,
+            "phi": 45.54300,
+            "mid": "anirniq.acquisition.gps.lat",
+
+            "broadcast": ["serial"]
+        },
+        {
+            "id": "fake.gps.lon",
+            "module": "fake",
+            "frequency": 100,
+            "alpha": 0.01,
+            "omega": 0.47,
+            "phi": -73.55000,
+            "mid": "anirniq.acquisition.gps.lon",
+
+            "broadcast": ["serial"]
+        },
+        {
+            "id": "serial",
+            "module": "serial",
+            "port": "/dev/pts/3",
+            "baudrate": 115200,
+            "protocol": "protocol.xml",
+
+            "broadcast": ["dumper"]
+        },
+        {
+            "id": "dumper",
+            "module": "dumper" 
+        }
+    ]
+}

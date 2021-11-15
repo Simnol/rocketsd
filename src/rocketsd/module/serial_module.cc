@@ -149,7 +149,7 @@ void SerialModule::onData()
     for (const auto& byte: buffer) {
         buffer_.push_back(static_cast<std::uint8_t>(byte));
 
-        if (buffer_.size() > sizeof(radio_packet_t)) {
+        if (buffer_.size() >= sizeof(radio_packet_t)) {
             // Yes, this is very explicit/ugly, but:
             // - Can't memcpy/reinterpret_cast because dequeue is non-continuous
             // - No branch is not pretty but it is efficient, predictable
