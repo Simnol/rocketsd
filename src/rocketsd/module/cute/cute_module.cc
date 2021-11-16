@@ -13,10 +13,20 @@
 
 namespace rocketsd::modules::cute {
 
+namespace {
+    struct CommandConfiguration {
+        std::string command;
+        ::cute::proto::Handshake::Command::Type type;
+    };
+}
+
+
 struct CuteModule::Priv {
     std::string path;
     std::string host;
     unsigned port;
+
+    std::vector<CommandConfiguration> commands;
 
     QtSocketAdapter* socket = nullptr;
 };
@@ -46,6 +56,32 @@ bool CuteModule::init(json& config)
             util::json::optional(_d->port, "port", 0u)
         )) {
         return false;
+    }
+
+    if (config.count("commands") && config["commands"].is_array()) {
+        for (const auto subconfig: config["commands"]) {
+            if (!subconfig.is_object()) {
+                logging::err("CuteModule") << "Invalid JSON type for command configuration: ignoring" << logging::endl;
+                continue;
+            }
+
+            std::string name, type;
+            if (!util::json::validate("CuteModule", subconfig,
+                util::json::required(name, "name"),
+                util::json::required(type, "type")
+            )) {
+                continue;
+            }
+
+            util::switcher::string(type, {
+                {"number", [&]() { _d -> commands.emplace_back(name, ::cute::proto::Handshake_Command_Type_NUMBER); }},
+                {"state", [&]() { _d -> commands.emplace_back(name, ::cute::proto::Handshake_Command_Type_STATE); }},
+                {"string", [&]() { _d -> commands.emplace_back(name, ::cute::proto::Handshake_Command_Type_STRING); }},
+                {"bool", [&]() { _d -> commands.emplace_back(name, ::cute::proto::Handshake_Command_Type_BOOL); }}
+            }, [&]() {
+                logging::err("CuteModule") << "Invalid command type for command configuration: ignoring" << logging::endl;
+            });
+        }
     }
 
     if (_d->path == "" && (_d->host == "" || _d->port == 0)) {
@@ -139,15 +175,11 @@ void CuteModule::onConnected()
     ::cute::proto::Handshake* handshake = new ::cute::proto::Handshake();
     handshake->set_name("rocketsd");
 
-    // for (std::pair<int, rocketsd::protocol::Node*> node: *protocol_) {
-    //     for (std::pair<int, rocketsd::protocol::Message*> message: *(node.second)) {
-    //         if (message.second->command()) {
-    //             auto* command = handshake->add_commands();
-    //             command->set_name(rocketsd::protocol::to_cute_name(protocol_.get(), node.second, message.second));
-    //             command->set_type(::cute::proto::Handshake_Command_Type_BOOL);
-    //         }
-    //     }
-    // }
+    for (const auto& command: _d -> commands) {
+        auto cmd = handshake->add_commands();
+        cmd -> set_name(command.command);
+        cmd -> set_type(command.type);
+    }
 
     std::shared_ptr<::cute::proto::Packet> cutepacket = std::make_shared<::cute::proto::Packet>();
     cutepacket->set_allocated_handshake(handshake);

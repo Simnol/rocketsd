@@ -129,6 +129,9 @@ void SerialModule::onMessage(Message msg)
             case cute::proto::Measurement::kState:
                 packet.payload.INT = msg.measurement.state();
                 break;
+            case cute::proto::Measurement::kBool:
+                packet.payload.INT = (msg.measurement.bool_() ? 1 : 0);
+                break;
             default:
                 logging::err("SerialModule") << "Unsupported payload type" << logging::endl;
                 return;
@@ -149,7 +152,7 @@ void SerialModule::onData()
     for (const auto& byte: buffer) {
         buffer_.push_back(static_cast<std::uint8_t>(byte));
 
-        if (buffer_.size() > sizeof(radio_packet_t)) {
+        if (buffer_.size() >= sizeof(radio_packet_t)) {
             // Yes, this is very explicit/ugly, but:
             // - Can't memcpy/reinterpret_cast because dequeue is non-continuous
             // - No branch is not pretty but it is efficient, predictable

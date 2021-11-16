@@ -1,0 +1,26 @@
+{
+    "modules": [
+        {
+            "id": "serial",
+            "module": "serial",
+            "port": "/dev/pts/4",
+            "baudrate": 115200,
+            "protocol": "protocol.xml",
+            "broadcast": ["cute"]
+        },
+        {
+            "id": "cute",
+            "module": "cute",
+            "host": "127.0.0.1",
+            "commands": [
+                { "name": "anirniq.remote_control.eject.drogue", "type": "state" },
+                { "name": "anirniq.remote_control.eject.main", "type": "state" },
+                { "name": "anirniq.remote_control.engine.sequence.start", "type": "state" },
+                { "name": "anirniq.remote_control.engine.sequence.set", "type": "state" },
+                { "name": "anirniq.remote_control.engine.sequence.stop", "type": "state" }
+            ],
+            "port": 42857,
+            "broadcast": ["serial"]
+        }
+    ]
+}
