@@ -1,5 +1,7 @@
 # RockÉTSd
 
+[![Build, test and package](https://github.com/ngc7293/rocketsd/actions/workflows/build-package.yml/badge.svg?branch=develop&event=push)](https://github.com/ngc7293/rocketsd/actions/workflows/build-package.yml)
+
 ---
 
 - [RockÉTSd](#rockétsd)
@@ -68,16 +70,13 @@ ninja
 
 rocketsd takes the following arguments
 
-| argument        | type   | description                 |
-|-----------------|--------|-----------------------------|
-| `-c/--config`   | `path` | Path to configuration JSON  |
-| `-p/--protocol` | `path` | Path to protocol definition |
-
-These default to `config.json` and `protocol.xml` respectively.
+| argument        | type   | description                 | default     |
+|-----------------|--------|-----------------------------|-------------|
+| `-c/--config`   | `path` | Path to configuration JSON  | config.json |
 
 ```bash
 # e.g.
-build/bin/rocketsd --config config.json --protocol anirniq.xml
+build/bin/rocketsd --config config.json
 ```
 
 ## Configuration
@@ -112,6 +111,7 @@ Receives and transmits data on a UART (serial) port
 | `module`   | `string` | `"cute"`                               |
 | `port`     | `string` | Serial port to use (e.g.: `/dev/ttyX`) |
 | `baudrate` | `uint`   | Baudrate                               |
+| `protocol` | `path`   | Path to protocol.xml                   |
 
 #### Cute
 
