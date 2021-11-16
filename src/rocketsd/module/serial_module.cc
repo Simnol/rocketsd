@@ -129,6 +129,9 @@ void SerialModule::onMessage(Message msg)
             case cute::proto::Measurement::kState:
                 packet.payload.INT = msg.measurement.state();
                 break;
+            case cute::proto::Measurement::kBool:
+                packet.payload.INT = (msg.measurement.bool_() ? 1 : 0);
+                break;
             default:
                 logging::err("SerialModule") << "Unsupported payload type" << logging::endl;
                 return;
